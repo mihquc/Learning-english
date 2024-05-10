@@ -3,6 +3,7 @@ import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import Hello from '../screens/recommend/hello';
 import ChooseLanguage from '../screens/recommend/chooseLanguage';
+import EnglishLevel from '../screens/recommend/englishLevel';
 
 const Stack = createNativeStackNavigator();
 const Recommend = () => {
@@ -24,7 +25,14 @@ const Recommend = () => {
                     gestureEnabled: false,
                 }}
             />
-            {/* <Stack.Screen /> */}
+            <Stack.Screen
+                name="EnglishLevel"
+                component={EnglishLevel}
+                options={{
+                    headerShown: false,
+                    gestureEnabled: false,
+                }}
+            />
         </Stack.Navigator>
     )
 }
