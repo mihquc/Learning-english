@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import Hello from '../screens/recommend/hello';
 import ChooseLanguage from '../screens/recommend/chooseLanguage';
 import EnglishLevel from '../screens/recommend/englishLevel';
+import LoginScreen from '../screens/login';
 
 const Stack = createNativeStackNavigator();
 const Recommend = () => {
@@ -28,6 +29,14 @@ const Recommend = () => {
             <Stack.Screen
                 name="EnglishLevel"
                 component={EnglishLevel}
+                options={{
+                    headerShown: false,
+                    gestureEnabled: false,
+                }}
+            />
+            <Stack.Screen
+                name="LoginScreen"
+                component={LoginScreen}
                 options={{
                     headerShown: false,
                     gestureEnabled: false,
