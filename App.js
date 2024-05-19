@@ -4,10 +4,8 @@ import { SafeAreaView, StyleSheet, useColorScheme } from 'react-native';
 import AnimatedSplash from "react-native-animated-splash-screen";
 import BottomTabs from './app/navigation/BottomTabs';
 import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
-import LoginScreen from './app/screens/login';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useTheme } from 'react-native-paper';
-import Recommend from './app/navigation/Recommend';
+import AuthNavigator from './app/navigation/AuthNavigatior';
 
 export default function App() {
   const [loading, setloading] = useState(false);
@@ -33,10 +31,11 @@ const Stack = createNativeStackNavigator();
 const Tab = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='Recommend' screenOptions={{ headerShown: false }}>
-        <Stack.Screen name='Recommend' component={Recommend} />
-        {/* <Stack.Screen name='BottomTabs' component={BottomTabs} /> */}
-        <Stack.Screen name='LoginScreen' component={LoginScreen} />
+      <Stack.Navigator initialRouteName='BottomTabs' screenOptions={{ headerShown: false }}>
+        <Stack.Screen name='BottomTabs' component={BottomTabs} />
+        <Stack.Screen name='AuthNavigator' component={AuthNavigator} />
+        {/* <Stack.Screen name='RegisterScreen' component={NavigationRegister} />
+        <Stack.Screen name='BeginScreen' component={BeginScreen} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   )

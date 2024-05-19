@@ -1,0 +1,23 @@
+{
+    "navigation_header": {
+        "LoginScreen": "Đăng nhập",
+        "Register": "Đăng ký",
+        "BuyHistory": "Lịch sử mua hàng",
+        "SearchScreen": "Tìm kiếm sản phẩm",
+        "TermsOfContract": "Hợp đồng vay"
+    },
+    "register": {
+        "gender": "Giới tính của bạn ?",
+        "register": "Tạo tài khoản",
+        "birthday": "Ngày sinh của ban ?",
+        "agreeToTerms": "Điều khoản sử dụng dịch vụ.",
+        "agreeConsent": "Thu thập, sử dụng thông tin cá nhân.",
+        "emailService": "Quảng cáo qua e-mail"
+    },
+    "login": {
+        "login": "Đăng nhập",
+        "title_login": "Mua bán hàng cũ",
+        "login_google": "Đăng nhập bằng Google",
+        "login_apple": "Đăng nhập bằng Apple"
+    }
+}

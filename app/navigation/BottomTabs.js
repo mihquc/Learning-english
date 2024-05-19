@@ -5,6 +5,8 @@ import HomeScreen from '../screens/home';
 import { useTheme } from 'react-native-paper';
 import LoginScreen from '../screens/login';
 import Pronounce from '../screens/pronounce';
+import ProfileScreen from '../screens/profile';
+import BackBar from '../components/BackBar';
 
 const Tab = createBottomTabNavigator();
 
@@ -55,7 +57,7 @@ const BottomTabs = () => {
                     elevation: 0,
                     backgroundColor: '#FFFFFF',
                     borderRadius: 15,
-                    height: 90,
+                    height: 70,
                     ...styles.shadow,
                 }
             }}
@@ -94,14 +96,14 @@ const BottomTabs = () => {
                 options={{
                     headerShown: false,
                     // tabBarLabel: `${i18n.t('Trang chủ')}`,
-                    tabBarLabel: 'Trang chủ',
+                    tabBarLabel: 'Pronounce',
                     tabBarShowLabel: false,
                     tabBarIcon: ({ focused, color, size }) => {
                         return (
                             <View style={[localStyles.backGroundTab]}>
                                 <View style={localStyles.wrapperIcon}>
                                     <Image
-                                        source={require('../../assets/li_home.png')}
+                                        source={require('../../assets/home.png')}
                                         style={[localStyles.iconTab, { tintColor: labelOrIconColor(focused) }]}
                                         resizeMode="contain"
                                     />
@@ -117,26 +119,26 @@ const BottomTabs = () => {
                 }}
             />
             <Tab.Screen
-                name={'LoginScreen'}
-                component={LoginScreen}
+                name={'ProfileScreen'}
+                component={ProfileScreen}
                 options={{
                     headerShown: false,
                     // tabBarLabel: `${i18n.t('Trang chủ')}`,
-                    tabBarLabel: 'Trang chủ',
+                    tabBarLabel: 'Profile',
                     tabBarShowLabel: false,
                     tabBarIcon: ({ focused, color, size }) => {
                         return (
                             <View style={[localStyles.backGroundTab]}>
                                 <View style={localStyles.wrapperIcon}>
                                     <Image
-                                        source={require('../../assets/li_home.png')}
+                                        source={require('../../assets/icon_person.png')}
                                         style={[localStyles.iconTab, { tintColor: labelOrIconColor(focused) }]}
                                         resizeMode="contain"
                                     />
                                 </View>
                                 <View style={localStyles.tabStyle}>
                                     <Text style={[localStyles.labelStyle, { color: labelOrIconColor(focused) }]}>
-                                        Trang chủ
+                                        Account
                                     </Text>
                                 </View>
                             </View>
@@ -144,62 +146,7 @@ const BottomTabs = () => {
                     },
                 }}
             />
-            <Tab.Screen
-                name={'a'}
-                component={LoginScreen}
-                options={{
-                    headerShown: false,
-                    // tabBarLabel: `${i18n.t('Trang chủ')}`,
-                    tabBarLabel: 'Trang chủ',
-                    tabBarShowLabel: false,
-                    tabBarIcon: ({ focused, color, size }) => {
-                        return (
-                            <View style={[localStyles.backGroundTab]}>
-                                <View style={localStyles.wrapperIcon}>
-                                    <Image
-                                        source={require('../../assets/li_home.png')}
-                                        style={[localStyles.iconTab, { tintColor: labelOrIconColor(focused) }]}
-                                        resizeMode="contain"
-                                    />
-                                </View>
-                                <View style={localStyles.tabStyle}>
-                                    <Text style={[localStyles.labelStyle, { color: labelOrIconColor(focused) }]}>
-                                        Trang chủ
-                                    </Text>
-                                </View>
-                            </View>
-                        );
-                    },
-                }}
-            />
-            <Tab.Screen
-                name={'c'}
-                component={LoginScreen}
-                options={{
-                    headerShown: false,
-                    // tabBarLabel: `${i18n.t('Trang chủ')}`,
-                    tabBarLabel: 'Trang chủ',
-                    tabBarShowLabel: false,
-                    tabBarIcon: ({ focused, color, size }) => {
-                        return (
-                            <View style={[localStyles.backGroundTab]}>
-                                <View style={localStyles.wrapperIcon}>
-                                    <Image
-                                        source={require('../../assets/li_home.png')}
-                                        style={[localStyles.iconTab, { tintColor: labelOrIconColor(focused) }]}
-                                        resizeMode="contain"
-                                    />
-                                </View>
-                                <View style={localStyles.tabStyle}>
-                                    <Text style={[localStyles.labelStyle, { color: labelOrIconColor(focused) }]}>
-                                        Trang chủ
-                                    </Text>
-                                </View>
-                            </View>
-                        );
-                    },
-                }}
-            />
+
         </Tab.Navigator>
     )
 }
