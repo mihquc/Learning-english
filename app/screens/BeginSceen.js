@@ -1,8 +1,7 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, Platform } from 'react-native'
 import React from 'react'
-import NavigationService from '../../../navigation/NavigationService';
-import useNavigationService from '../../../navigation/NavigationService';
-const Hello = () => {
+import useNavigationService from '../navigation/NavigationService';
+const BeginScreen = () => {
     const { navigate, goBack, goPop } = useNavigationService();
     const localStyles = React.useMemo(
         () =>
@@ -46,8 +45,8 @@ const Hello = () => {
     );
     return (
         <View style={localStyles.container}>
-            <Text style={localStyles.textHeader}>Hello, I'm a Lion</Text>
-            <Image source={require('../../../../assets/liongo.png')} resizeMode='contain' />
+            <Text style={localStyles.textHeader}>Hello, I'm Lion</Text>
+            <Image source={require('../../assets/liongo.png')} resizeMode='contain' />
             <View style={{ width: '80%', marginVertical: 14 }}>
                 <Text style={[localStyles.textBody, { textAlign: 'center' }]}>
                     Learn English whenever and wherever you want. It's free forever.
@@ -64,17 +63,17 @@ const Hello = () => {
                     shadowRadius: 3.5,
                     elevation: 3
                 }]}
-                    onPress={() => navigate('ChooseLanguage', {})}
+                    onPress={() => navigate('LoginScreen', {})}
                 >
                     <Text style={[localStyles.textButton, { color: '#ffffff' }]}>
-                        GET START
+                        Sign In
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[localStyles.button, { borderColor: '#f2c601' }]}
-                    onPress={() => navigate('LoginScreen', {})}
+                    onPress={() => navigate('RegisterScreen', {})}
                 >
                     <Text style={[localStyles.textButton, { color: '#f2c601' }]}>
-                        LOGIN
+                        Sign Up
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -82,4 +81,4 @@ const Hello = () => {
     )
 }
 
-export default Hello
+export default BeginScreen

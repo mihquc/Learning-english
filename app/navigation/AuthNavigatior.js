@@ -1,42 +1,42 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import * as React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import Hello from '../screens/recommend/hello';
-import ChooseLanguage from '../screens/recommend/chooseLanguage';
-import EnglishLevel from '../screens/recommend/englishLevel';
+import LoginScreen from './NavigationLogin';
+import RegisterScreen from './NavigationRegister';
+import BeginScreen from '../screens/BeginSceen';
+import GenderScreen from '../screens/register/gender';
+import BirthdayScreen from '../screens/register/birthday';
 
 const Stack = createNativeStackNavigator();
-const Recommend = () => {
+const AuthNavigator = () => {
+
     return (
-        <Stack.Navigator initialRouteName='Hello'>
+        <Stack.Navigator initialRouteName="BeginScreen">
             <Stack.Screen
-                name="Hello"
-                component={Hello}
+                name="BeginScreen"
+                component={BeginScreen}
                 options={{
                     headerShown: false,
                     gestureEnabled: false,
                 }}
             />
             <Stack.Screen
-                name="ChooseLanguage"
-                component={ChooseLanguage}
+                name="LoginScreen"
+                component={LoginScreen}
                 options={{
                     headerShown: false,
                     gestureEnabled: false,
                 }}
             />
             <Stack.Screen
-                name="EnglishLevel"
-                component={EnglishLevel}
+                name="RegisterScreen"
+                component={RegisterScreen}
                 options={{
                     headerShown: false,
                     gestureEnabled: false,
                 }}
             />
         </Stack.Navigator>
-    )
-}
+    );
+};
 
-export default Recommend
-
-const styles = StyleSheet.create({})
+export default AuthNavigator;
