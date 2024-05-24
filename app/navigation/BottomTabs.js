@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet, Text, View, Image } from 'react-native'
+import { Dimensions, StyleSheet, Text, View, Image, Platform } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react'
 import HomeScreen from '../screens/home';
@@ -7,12 +7,14 @@ import LoginScreen from '../screens/login';
 import Pronounce from '../screens/pronounce';
 import ProfileScreen from '../screens/profile';
 import BackBar from '../components/BackBar';
+import HomeBar from '../components/header/HomeBar';
+import HomeNavigator from './HomeNavigator';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabs = () => {
     const { colors } = useTheme();
-    const labelOrIconColor = (focused) => (focused ? colors.onBackground : colors.outline);
+    const labelOrIconColor = (focused) => (focused ? '#330000' : colors.outline);
     const dimensionWidth = Dimensions.get('window').width;
     const localStyles = React.useMemo(
         () =>
@@ -38,16 +40,21 @@ const BottomTabs = () => {
                     height: 24,
                 },
                 backGroundTab: {
+                    alignItems: 'center',
+                    top: Platform.OS === 'android' ? 0 : 15,
                     width: dimensionWidth > 550 ? 200 : '100%',
-                    borderRadius: 12,
-                    paddingBottom: 6,
-                    paddingTop: 10
+                    // height: 70,
+                    // borderRadius: 12,
+                    // paddingBottom: 6,
+                    // paddingTop: 10,
+                    // borderWidth: 1
                 },
             }),
         [],
     );
     return (
         <Tab.Navigator
+            initialRouteName={'HomeScreen'}
             screenOptions={{
                 tabBarStyle: {
                     position: 'absolute',
@@ -64,7 +71,7 @@ const BottomTabs = () => {
         >
             <Tab.Screen
                 name={'HomeScreen'}
-                component={HomeScreen}
+                component={HomeNavigator}
                 options={{
                     headerShown: false,
                     // tabBarLabel: `${i18n.t('Trang chủ')}`,

@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import i18n from '../i18n';
 import useNavigationService from './../navigation/NavigationService';
-import styles from '../styles/BackBar/styles';
+import styles from '../styles/styles';
 
 
 
