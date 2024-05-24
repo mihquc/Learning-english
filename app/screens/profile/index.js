@@ -1,6 +1,9 @@
-import { SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity, useColorScheme } from 'react-native'
+import {
+    SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity, useColorScheme, ScrollView, KeyboardAvoidingView
+} from 'react-native'
 import React, { useState } from 'react'
 import RadioButtonRN from 'radio-buttons-react-native';
+import { setOS } from '../../styles/styles';
 
 const ProfileScreen = () => {
     const localStyles = React.useMemo(() =>
@@ -9,7 +12,7 @@ const ProfileScreen = () => {
                 flex: 1,
                 alignItems: 'center',
                 backgroundColor: '#FFFFFF',
-                justifyContent: 'flex-start'
+                // justifyContent: 'flex-start'
             },
             body1: {
                 alignItems: 'center',
@@ -63,7 +66,7 @@ const ProfileScreen = () => {
         <SafeAreaView style={localStyles.container}>
             <View style={localStyles.body1}>
                 <Image
-                    style={{ width: 120, height: 120, borderRadius: 10 }}
+                    style={{ width: 100, height: 100, borderRadius: 10 }}
                     source={{ uri: 'https://i.postimg.cc/Bv2nscWb/icon-default-avatar.png' }}
                     // source={{ uri: user.avatar == ' ' || !user.avatar ? LINK_IMAGE_DEFAULT : user.avatar }}
                     resizeMode='contain'
@@ -86,7 +89,8 @@ const ProfileScreen = () => {
                 <TouchableOpacity style={{
                     width: '40%',
                     flexDirection: 'row', alignItems: 'center',
-                    padding: 12, borderRadius: 15, justifyContent: 'space-evenly', backgroundColor: '#f2c601'
+                    padding: 12, borderRadius: 15, justifyContent: 'space-evenly',
+                    backgroundColor: '#f2c601'
                 }}>
                     <Image
                         source={require('../../../assets/edit.png')}
@@ -98,6 +102,9 @@ const ProfileScreen = () => {
                         Edit Profile
                     </Text>
                 </TouchableOpacity>
+            </View>
+            <View style={{}}>
+
             </View>
             <View style={{ width: '85%', flex: 1, borderWidth: 1, alignItems: 'center' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
