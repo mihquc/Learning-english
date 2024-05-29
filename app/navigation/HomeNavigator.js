@@ -9,6 +9,8 @@ import HomeBar from '../components/header/HomeBar';
 
 import i18n from '../i18n';
 import { IosDevice } from '../config/devices';
+import Settings from '../screens/settings';
+import BackBar from '../components/BackBar';
 
 
 const Stack = createNativeStackNavigator();
@@ -27,6 +29,16 @@ const HomeNavigator = () => {
                     animationTypeForReplace,
                     header: (props) => <HomeBar />,
                     gestureEnabled: false,
+                }}
+            />
+            <Stack.Screen
+                name="Settings"
+                component={Settings}
+                options={{
+                    animationTypeForReplace,
+                    headerShown: true,
+                    gestureEnabled: false,
+                    header: () => <BackBar isIconBack />
                 }}
             />
         </HomeStack.Navigator>

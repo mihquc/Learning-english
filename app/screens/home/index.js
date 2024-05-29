@@ -4,11 +4,18 @@ import {
 import React, { useEffect, useRef, useState } from 'react'
 import ProgressBar from 'react-native-progress/Bar';
 import { SwiperFlatList } from 'react-native-swiper-flatlist';
+// import * as Tts from 'react-native-tts';
+import * as Speech from 'expo-speech';
+// import { Speech } from 'expo'
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 const HomeScreen = () => {
     const [fetchData, setFetchData] = useState([])
+    // Speech.speak({
+    //     text: 'Helle',
+    //     voice: 'en-US'
+    // })
     const data = [
         page = [
             {
@@ -72,7 +79,12 @@ const HomeScreen = () => {
         ]
 
     ]
+    const listAllVoiceOptions = async () => {
+        let voices = await Speech.getAvailableVoicesAsync();
+        console.log(voices);
+    };
     useEffect(() => {
+        // listAllVoiceOptions();
         const newData = data.map((item) => {
             return item.map((ite) => ({
                 ...ite,
@@ -120,20 +132,16 @@ const HomeScreen = () => {
         return color;
     };
 
-    const renderDots = (list, currentIndex) => {
-        return list.map((e, index) => (
-            <View
-                key={index.toString()}
-                style={[
-                    styles.dot,
-                    {
-                        backgroundColor: index === currentIndex ? '#f1c600' : 'darkgray',
-                        width: index === currentIndex ? 15 : 8
-                    },
-                ]}
-            />
-        ));
-    };
+    const handleSpeak = (text) => {
+        Speech.speak(text,
+            options = {
+                voice: "com.apple.speech.synthesis.voice.Fred",
+                // language: 'en-US',
+                pitch: 1,
+                rate: 1.2
+            }
+        )
+    }
     const renderItemFlastlist = ({ item, index }) => {
         return (
             <TouchableOpacity
@@ -151,6 +159,7 @@ const HomeScreen = () => {
                     shadowRadius: 3.5,
                     elevation: 3
                 }}
+                onPress={() => { handleSpeak('Cat') }}
             >
                 <View style={{ width: '60%', height: '80%', justifyContent: 'space-around', alignItems: 'center' }}>
                     <View style={{ flexDirection: 'row', width: '80%', alignItems: 'center', justifyContent: 'space-around' }}>
@@ -207,15 +216,15 @@ const HomeScreen = () => {
     }
     return (
         <SafeAreaView style={styles.container}>
-            {/* <View style={{ width: width, marginTop: '10%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                {renderDots(data, 1)}
-            </View> */}
             <View style={{ height: '100%' }}>
                 <SwiperFlatList
                     data={fetchData}
                     renderItem={renderItem}
                     showPagination
                     renderAll={true}
+                    paginationStyle={{ marginBottom: Platform.OS === 'android' ? '15%' : '10%' }}
+                    paginationStyleItemActive={{ backgroundColor: '#f1c600', width: 25, height: 10 }}
+                    paginationStyleItemInactive={{ backgroundColor: 'darkgray', width: 10, height: 10 }}
                 />
             </View>
         </SafeAreaView>
