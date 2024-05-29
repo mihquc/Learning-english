@@ -9,12 +9,12 @@ import ProfileScreen from '../screens/profile';
 import BackBar from '../components/BackBar';
 import HomeBar from '../components/header/HomeBar';
 import HomeNavigator from './HomeNavigator';
+import ProfileNavigator from './ProfileNavigator';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabs = () => {
-    const { colors } = useTheme();
-    const labelOrIconColor = (focused) => (focused ? '#330000' : colors.outline);
+    const labelOrIconColor = (focused) => (focused ? '#f1c600' : '#ffffff');
     const dimensionWidth = Dimensions.get('window').width;
     const localStyles = React.useMemo(
         () =>
@@ -62,7 +62,7 @@ const BottomTabs = () => {
                     right: 20,
                     left: 20,
                     elevation: 0,
-                    backgroundColor: '#FFFFFF',
+                    backgroundColor: '#000000',
                     borderRadius: 15,
                     height: 70,
                     ...styles.shadow,
@@ -127,7 +127,7 @@ const BottomTabs = () => {
             />
             <Tab.Screen
                 name={'ProfileScreen'}
-                component={ProfileScreen}
+                component={ProfileNavigator}
                 options={{
                     headerShown: false,
                     // tabBarLabel: `${i18n.t('Trang chủ')}`,
