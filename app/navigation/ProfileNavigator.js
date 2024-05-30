@@ -1,14 +1,12 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { Platform, Dimensions } from 'react-native';
-import { useTheme } from 'react-native-paper';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import HomeScreen from '../screens/home';
 import HomeBar from '../components/header/HomeBar';
 
 import i18n from '../i18n';
 import { IosDevice } from '../config/devices';
+import ProfileScreen from '../screens/profile';
 import Settings from '../screens/settings';
 import BackBar from '../components/BackBar';
 
@@ -17,14 +15,13 @@ const Stack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
 const height = Dimensions.get('window').height;
 
-const HomeNavigator = () => {
-    const { colors } = useTheme();
+const ProfileNavigator = () => {
     const [animationTypeForReplace, setAnimationTypeForReplace] = useState('push');
     return (
-        <HomeStack.Navigator initialRouteName="HomeScreen" headerMode="screen">
+        <HomeStack.Navigator initialRouteName="ProfileScreen" headerMode="screen">
             <Stack.Screen
-                name="HomeScreen"
-                component={HomeScreen}
+                name="ProfileScreen"
+                component={ProfileScreen}
                 options={{
                     animationTypeForReplace,
                     header: (props) => <HomeBar />,
@@ -45,4 +42,4 @@ const HomeNavigator = () => {
     );
 };
 
-export default HomeNavigator;
+export default ProfileNavigator;

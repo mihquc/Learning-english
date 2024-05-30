@@ -1,48 +1,47 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { Platform, Dimensions } from 'react-native';
-import { useTheme } from 'react-native-paper';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import HomeScreen from '../screens/home';
 import HomeBar from '../components/header/HomeBar';
 
 import i18n from '../i18n';
 import { IosDevice } from '../config/devices';
+import ProfileScreen from '../screens/profile';
 import Settings from '../screens/settings';
 import BackBar from '../components/BackBar';
+import Info from '../screens/info';
 
 
 const Stack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
 const height = Dimensions.get('window').height;
 
-const HomeNavigator = () => {
-    const { colors } = useTheme();
+const SettingsNavigator = () => {
     const [animationTypeForReplace, setAnimationTypeForReplace] = useState('push');
     return (
-        <HomeStack.Navigator initialRouteName="HomeScreen" headerMode="screen">
+        <HomeStack.Navigator initialRouteName="Settings" headerMode="screen">
             <Stack.Screen
-                name="HomeScreen"
-                component={HomeScreen}
+                name="Settings"
+                component={Settings}
                 options={{
                     animationTypeForReplace,
-                    header: (props) => <HomeBar />,
+                    headerShown: true,
+                    header: () => <BackBar isIconBack />,
                     gestureEnabled: false,
                 }}
             />
-            {/* <Stack.Screen
-                name="Settings"
-                component={Settings}
+            <Stack.Screen
+                name="Info"
+                component={Info}
                 options={{
                     animationTypeForReplace,
                     headerShown: true,
                     gestureEnabled: false,
                     header: () => <BackBar isIconBack />
                 }}
-            /> */}
+            />
         </HomeStack.Navigator>
     );
 };
 
-export default HomeNavigator;
+export default SettingsNavigator;

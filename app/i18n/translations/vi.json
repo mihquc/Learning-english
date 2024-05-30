@@ -2,7 +2,7 @@
     "navigation_header": {
         "LoginScreen": "Đăng nhập",
         "Register": "Đăng ký",
-        "BuyHistory": "Lịch sử mua hàng",
+        "Settings": "Settings",
         "SearchScreen": "Tìm kiếm sản phẩm",
         "TermsOfContract": "Hợp đồng vay"
     },
