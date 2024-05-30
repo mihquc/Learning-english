@@ -6,10 +6,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import i18n from '../../i18n';
 import styles from '../../styles/styles';
+import useNavigationService from '../../navigation/NavigationService';
 
 
 const HomeBar = ({ ...props }) => {
-  const { colors } = useTheme();
+  const { navigate } = useNavigationService();
   const insets = useSafeAreaInsets();
 
   const localStyles = React.useMemo(
@@ -75,7 +76,7 @@ const HomeBar = ({ ...props }) => {
           <TouchableOpacity
             style={{ justifyContent: 'center' }}
             onPress={() => {
-              // NavigationService.navigate('NotificationScreen');
+              navigate('SettingsNavigator', {})
             }}
           >
             <Image
