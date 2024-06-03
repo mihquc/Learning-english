@@ -21,7 +21,6 @@ const BottomTabs = () => {
             StyleSheet.create({
                 labelStyle: {
                     fontSize: 12,
-                    fontFamily: 'Pretendard',
                     fontWeight: '400',
                     lineHeight: 15.6,
                     textAlign: 'center',

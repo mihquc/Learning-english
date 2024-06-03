@@ -5,11 +5,14 @@ import i18n from '../i18n';
 
 import BackBar from '../components/BackBar';
 
-// import { useStoreActions } from 'easy-peasy';
 import useNavigationService from './NavigationService';
 import LoginScreen from '../screens/login';
+import RegisterScreen from '../screens/register';
+import ForgotPassword from '../screens/forgotPass/ForgotPassword';
+import ResetPassword from '../screens/forgotPass/ResetPassword';
+import NewPassword from '../screens/forgotPass/NewPassword';
+import WelcomeBack from '../screens/forgotPass/WelcomeBack';
 
-// import { modalActionSelector } from '../store';
 const stack = createNativeStackNavigator();
 const NavigationLogin = () => {
     const { navigate, goBack, goPop } = useNavigationService();
@@ -21,6 +24,46 @@ const NavigationLogin = () => {
                 options={{
                     header: () => <BackBar style={{ paddingHorizontal: 17 }} isIconBack styleWrapperIcon={{ marginRight: 8 }} />,
                     gestureEnabled: false,
+                }}
+            />
+            <stack.Screen
+                name="ForgotPassword"
+                component={ForgotPassword}
+                options={{
+                    headerTransparent: true,
+                    header: () => <BackBar style={{ paddingHorizontal: 17 }} isIconBack styleWrapperIcon={{ marginRight: 8 }} />,
+                }}
+            />
+            <stack.Screen
+                name="Register"
+                component={RegisterScreen}
+                options={{
+                    headerTransparent: true,
+                    header: () => <BackBar style={{ paddingHorizontal: 17 }} isIconBack styleWrapperIcon={{ marginRight: 8 }} />,
+                }}
+            />
+            <stack.Screen
+                name="ResetPassword"
+                component={ResetPassword}
+                options={{
+                    headerTransparent: true,
+                    header: () => <BackBar style={{ paddingHorizontal: 17 }} isIconBack styleWrapperIcon={{ marginRight: 8 }} />,
+                }}
+            />
+            <stack.Screen
+                name="NewPassword"
+                component={NewPassword}
+                options={{
+                    headerTransparent: true,
+                    header: () => <BackBar style={{ paddingHorizontal: 17 }} isIconBack styleWrapperIcon={{ marginRight: 8 }} />,
+                }}
+            />
+            <stack.Screen
+                name="WelcomeBack"
+                component={WelcomeBack}
+                options={{
+                    headerTransparent: true,
+                    header: () => <></>
                 }}
             />
             {/* <stack.Screen

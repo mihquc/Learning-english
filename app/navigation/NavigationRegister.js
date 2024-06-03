@@ -5,7 +5,6 @@ import { useTheme } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 
 import i18n from '../i18n';
-// import { modalActionSelector } from 'app/store';
 
 
 import BackBar from '../components/BackBar';
@@ -25,7 +24,6 @@ const NavigationRegister = () => {
       StyleSheet.create({
         titleIconClose: {
           fontSize: 16,
-          fontFamily: 'Pretendard',
           lineHeight: 19,
           fontWeight: '400',
           textAlign: 'center',

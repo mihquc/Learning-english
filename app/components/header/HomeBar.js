@@ -41,7 +41,6 @@ const HomeBar = ({ ...props }) => {
           color: '#FFFFFF',
           textTransform: 'none',
           textAlign: 'center',
-          fontFamily: 'Pretendard-Bold',
         },
       }),
     [],
