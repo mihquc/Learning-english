@@ -98,7 +98,6 @@ export default StyleSheet.create({
     },
     input: {
         fontSize: 14,
-        fontFamily: 'Pretendard',
         color: '#686868',
         borderWidth: 0.5,
         borderColor: '#C1C1C1',
@@ -111,7 +110,6 @@ export default StyleSheet.create({
     inputRegister: {
         width: '100%',
         fontSize: 12,
-        fontFamily: 'Pretendard',
         color: '#686868',
         borderColor: '#C1C1C1',
         borderRadius: 5,
@@ -134,7 +132,6 @@ export default StyleSheet.create({
     },
     textSplash: {
         fontSize: 16,
-        fontFamily: 'Pretendard',
         color: '#0066b2',
         fontWeight: 'bold',
         lineHeight: 21,
@@ -142,7 +139,6 @@ export default StyleSheet.create({
     },
     text8Bold: {
         fontSize: 8,
-        fontFamily: 'Pretendard',
         fontWeight: 'bold',
         color: '#686868',
         lineHeight: 11,
@@ -150,13 +146,11 @@ export default StyleSheet.create({
     labelButton10: {
         color: '#1E1E1E',
         fontSize: 16,
-        fontFamily: 'Pretendard',
         paddingVertical: Platform.OS == 'ios' ? 5 : 9.5,
         lineHeight: 17,
     },
     labelButton: {
         fontSize: 16,
-        fontFamily: 'Pretendard',
         fontWeight: 'bold',
         color: 'white',
         letterSpacing: 0.5,
@@ -165,20 +159,17 @@ export default StyleSheet.create({
     },
     text10Extra: {
         fontSize: 10,
-        fontFamily: 'Pretendard',
         color: '#242424',
         lineHeight: 12,
     },
     text10ExtraBold: {
         fontSize: 10,
-        fontFamily: 'Pretendard',
         fontWeight: 'bold',
         color: '#242424',
         lineHeight: 12,
     },
     text14SemiBold: {
         fontSize: 14,
-        fontFamily: 'Pretendard',
         fontWeight: 'bold',
         color: '#1E1E1E',
         lineHeight: 17,
@@ -186,25 +177,21 @@ export default StyleSheet.create({
     text14: {
         fontSize: 14,
         lineHeight: 17,
-        fontFamily: 'Pretendard',
         color: '#242424',
     },
     text16: {
         fontSize: 16,
-        fontFamily: 'Pretendard',
         lineHeight: 17,
         color: '#242424',
     },
     text11Regular: {
         fontSize: 11,
-        fontFamily: 'Pretendard',
         fontWeight: '400',
         color: '#242424',
         fontStyle: 'normal',
     },
     text12Regular: {
         fontSize: 12,
-        fontFamily: 'Pretendard',
         fontWeight: '400',
         color: '#242424',
         lineHeight: 17,
@@ -214,132 +201,122 @@ export default StyleSheet.create({
         color: '#242424',
         fontWeight: '400',
         lineHeight: 15.6,
-        fontFamily: 'Pretendard-Regular',
     },
     text9Bold: {
         fontSize: 9,
-        fontFamily: 'Pretendard',
         fontWeight: 'bold',
         color: '#242424',
         lineHeight: 11,
     },
     text9Regular: {
         fontSize: 9,
-        fontFamily: 'Pretendard',
         fontWeight: '400',
         color: '#242424',
         lineHeight: 11,
     },
     text12Medium: {
         fontSize: 12,
-        fontFamily: 'Pretendard',
         fontWeight: 'bold',
         color: '#242424',
         lineHeight: 15,
     },
     text16Bold: {
         fontSize: 16,
-        fontFamily: 'Pretendard',
         color: '#242424',
         fontWeight: 'bold',
     },
     text15Bold: {
         fontSize: 15,
-        fontFamily: 'Pretendard',
         color: '#242424',
         fontWeight: 'bold',
     },
     text18Bold: {
         fontSize: 16,
-        fontFamily: 'Pretendard-Bold',
         color: '#242424',
         fontWeight: 'bold',
     },
     text16Regular: {
         fontSize: 16,
-        fontFamily: 'Pretendard',
         fontWeight: 'normal',
         color: '#242424',
         lineHeight: 19,
     },
     text16Medium: {
         fontSize: 16,
-        fontFamily: 'Pretendard',
         fontWeight: 'bold',
         color: '#242424',
         lineHeight: 17,
     },
     text16ExtraBold: {
         fontSize: 16,
-        fontFamily: 'Pretendard-Bold',
         fontWeight: 'bold',
         color: '#242424',
         lineHeight: 19,
     },
     text20Regular: {
         fontSize: 20,
-        fontFamily: 'Pretendard',
+
         fontWeight: '400',
         color: '#242424',
         lineHeight: 30,
     },
     text20Bold: {
         fontSize: 20,
-        fontFamily: 'Pretendard',
+
         fontWeight: 'bold',
         color: '#242424',
         lineHeight: 30,
     },
     text12SemiBold: {
         fontSize: 12,
-        fontFamily: 'Pretendard',
+
         fontWeight: 'bold',
         color: '#242424',
         lineHeight: 15,
     },
     text12Bold: {
         fontSize: 12,
-        fontFamily: 'Pretendard',
+
         fontWeight: 'bold',
         color: '#242424',
     },
     textTitle: {
         fontSize: 16,
-        fontFamily: 'Pretendard',
+
         fontWeight: 'bold',
         color: '#242424',
         lineHeight: 17,
     },
     textList: {
         fontSize: 14,
-        fontFamily: 'Pretendard',
+
         fontWeight: 'bold',
         color: '#242424',
         lineHeight: 17,
     },
     textUnderline: {
         fontSize: 14,
-        fontFamily: 'Pretendard',
+
         textDecorationLine: 'underline',
         lineHeight: 17,
     },
     text14Regular: {
         fontSize: 14,
-        fontFamily: 'Pretendard',
+
         fontWeight: '400',
         color: '#242424',
         lineHeight: 19,
     },
     text18Regular: {
         fontSize: 18,
-        fontFamily: 'Pretendard',
+
         fontWeight: '400',
         color: '#242424',
         lineHeight: 30,
     },
     text18bodySMBold: {
         fontSize: 18,
-        fontFamily: 'Pretendard',
+
         fontWeight: '700',
         color: '#242424',
     },
@@ -350,7 +327,7 @@ export default StyleSheet.create({
     },
     text14Medium: {
         fontSize: 14,
-        fontFamily: 'Pretendard',
+
         fontWeight: 'bold',
         color: '#242424',
         lineHeight: 17,
@@ -359,7 +336,7 @@ export default StyleSheet.create({
     text23Bold: {
         fontSize: 23,
         fontWeight: '700',
-        fontFamily: 'Pretendard',
+
         color: '#FCFCFC',
         lineHeight: 27.6,
     },
@@ -367,13 +344,13 @@ export default StyleSheet.create({
     text26Bold: {
         fontSize: 26,
         fontWeight: '700',
-        fontFamily: 'Pretendard',
+
         color: '#19181B',
     },
     textStyle: {
         fontSize: 14,
         fontWeight: '400',
-        fontFamily: 'Pretendard',
+
         color: '#19181B',
     },
 
@@ -398,7 +375,7 @@ export default StyleSheet.create({
     },
     title: {
         fontSize: 18,
-        fontFamily: 'Pretendard',
+
         fontStyle: 'normal',
         textAlign: 'center',
         textTransform: 'uppercase',
@@ -406,7 +383,7 @@ export default StyleSheet.create({
     },
     titledialog: {
         fontSize: 16,
-        fontFamily: 'Pretendard',
+
         fontWeight: '400',
         fontStyle: 'normal',
         textAlign: 'center',
@@ -417,7 +394,7 @@ export default StyleSheet.create({
     },
     titleSuccess: {
         fontSize: 16,
-        fontFamily: 'Pretendard',
+
         fontWeight: 'bold',
         textAlign: 'center',
         textTransform: 'uppercase',

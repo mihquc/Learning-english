@@ -6,9 +6,11 @@ import BottomTabs from './app/navigation/BottomTabs';
 import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AuthNavigator from './app/navigation/AuthNavigatior';
-import Settings from './app/screens/settings';
-import BackBar from './app/components/BackBar';
 import SettingsNavigator from './app/navigation/SettingsNavigator';
+import GameScreen from './app/screens/games';
+import { Provider } from 'react-redux';
+import { store } from './app/redux/store';
+import ProgressPlay from './app/components/Load/progressBarPlay';
 
 export default function App() {
   const [loading, setloading] = useState(false);
@@ -33,16 +35,26 @@ export default function App() {
 const Stack = createNativeStackNavigator();
 const Tab = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName='BottomTabs' screenOptions={{ headerShown: false }}>
-        <Stack.Screen name='BottomTabs' component={BottomTabs} />
-        <Stack.Screen name='AuthNavigator' component={AuthNavigator} />
-        <Stack.Screen
-          name='SettingsNavigator'
-          component={SettingsNavigator}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName='AuthNavigator' screenOptions={{ headerShown: false }}>
+          <Stack.Screen name='BottomTabs' component={BottomTabs} options={{ gestureEnabled: false }} />
+          <Stack.Screen name='AuthNavigator' component={AuthNavigator} />
+          <Stack.Screen
+            name='SettingsNavigator'
+            component={SettingsNavigator}
+          />
+          <Stack.Screen
+            name='GameScreen'
+            component={GameScreen}
+          />
+          <Stack.Screen
+            name='ProgressPlay'
+            component={ProgressPlay}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   )
 }
 

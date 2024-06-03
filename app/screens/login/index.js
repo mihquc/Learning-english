@@ -1,8 +1,8 @@
-import { SafeAreaView, StyleSheet, Text, View, Image, TextInput, Platform, TouchableOpacity } from 'react-native'
+import {
+    SafeAreaView, StyleSheet, Text, View, Image, TextInput, Platform, TouchableOpacity, KeyboardAvoidingView
+} from 'react-native'
 import React, { useState } from 'react'
-import ButtonCustom from '../../components/button/ButtonCustom'
 import useNavigationService from '../../navigation/NavigationService'
-import { useNavigation } from '@react-navigation/native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const LoginScreen = () => {
@@ -39,115 +39,140 @@ const LoginScreen = () => {
                 fontWeight: '400'
             },
             buttonBottom: {
-                position: 'relative',
-                // top: Platform.OS === 'android' ? 50 : 70,
                 alignItems: 'center',
                 borderRadius: 10,
                 width: '85%',
-                paddingVertical: 17,
-                marginTop: 50
+                paddingVertical: 15,
             }
         }), [])
-    const [email, setEmail] = useState()
-    const [password, setPassword] = useState()
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
     const [hide, setHide] = useState(true)
     const { navigate, goBack, goPop } = useNavigationService();
-    const [isButtonEnabled, setButtonEnabled] = useState(false);
 
-    const handleEmailChange = (text) => {
-        setEmail(text);
-        checkButtonState(text, password);
+    const handleUserNameChange = (text) => {
+        setUsername(text);
     };
 
     const handlePasswordChange = (text) => {
         setPassword(text);
-        checkButtonState(email, text);
     };
-    const checkButtonState = (emailValue, passwordValue) => {
-        if (emailValue?.trim() !== '' && passwordValue?.trim() !== '') {
-            setButtonEnabled(true);
-        } else {
-            setButtonEnabled(false);
-        }
-    };
+    const isFormValid = username.length > 0 && password.length > 0;
+
     return (
-        <SafeAreaView style={localStyles.container}>
-            <View style={{ width: '85%', height: '45%', justifyContent: 'space-between', }}>
-                <View style={{ alignItems: 'center' }}>
-                    <View style={{ borderWidth: 0.5, padding: 10, borderRadius: 10 }}>
-                        <Text style={{ fontSize: 16, fontWeight: '500' }}>Please log in to learn together!</Text>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'android' ? 'height' : ''}
+        >
+            <KeyboardAwareScrollView contentContainerStyle={localStyles.container}
+                showsVerticalScrollIndicator={false}>
+                <View style={{ width: '85%', height: '60%', justifyContent: 'center', }}>
+                    <View style={{ alignItems: 'center' }}>
+                        <View style={{ borderWidth: 1, padding: 10, borderRadius: 10, borderColor: '#f2c601' }}>
+                            <Text style={{ fontSize: 16, fontWeight: '500', color: '#f2c601' }}>Please log in to learn together!</Text>
+                        </View>
+                        <Image
+                            source={require('../../../assets/lion2.png')}
+                            style={{ width: 130, height: 130 }}
+                            resizeMode='contain'
+                        />
                     </View>
-                    <Image
-                        source={require('../../../assets/lion2.png')}
-                        style={{ width: 130, height: 130 }}
-                        resizeMode='contain'
-                    />
-                </View>
-                {/* <KeyboardAwareScrollView
+                    {/* <KeyboardAwareScrollView
                     contentContainerStyle={{}}
                     showsVerticalScrollIndicator={false}
                     extraScrollHeight={0}
                     enableOnAndroid={true}
                     enableAutomaticScroll={true}> */}
-                <View style={{ height: '45%', justifyContent: 'space-around' }}>
-                    <View style={localStyles.inputContainer}>
-                        <Image source={require('../../../assets/mail.png')} style={localStyles.icon} />
-                        <TextInput
-                            style={localStyles.input}
-                            placeholder='Email'
-                            keyboardType='email-address'
-                            value={email}
-                            onChangeText={handleEmailChange}
-                        />
-                    </View>
-                    <View style={localStyles.inputContainer}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
-                            <Image source={require('../../../assets/lock.png')} style={localStyles.icon} />
+                    <View style={{ height: '45%', justifyContent: 'space-around' }}>
+                        <View style={localStyles.inputContainer}>
+                            <Image source={require('../../../assets/icon_person.png')} style={localStyles.icon} />
                             <TextInput
                                 style={localStyles.input}
-                                placeholder='Password'
-                                secureTextEntry={hide ? true : false}
-                                value={password}
-                                onChangeText={handlePasswordChange}
+                                placeholder='User Name'
+                                keyboardType='default'
+                                value={username}
+                                onChangeText={handleUserNameChange}
                             />
                         </View>
-                        <TouchableOpacity onPress={() => setHide(!hide)}
-                            style={{ padding: 2 }}
-                        >
-                            <Image
-                                source={hide ? require('../../../assets/eye-password.png') : require('../../../assets/eye-password-hide.png')}
-                                style={{ tintColor: 'gray', width: 25, height: 18 }}
-                                resizeMode='cover'
-                            />
-                        </TouchableOpacity>
+                        <View style={localStyles.inputContainer}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                                <Image source={require('../../../assets/lock.png')} style={localStyles.icon} />
+                                <TextInput
+                                    style={localStyles.input}
+                                    placeholder='Password'
+                                    secureTextEntry={hide ? true : false}
+                                    value={password}
+                                    onChangeText={handlePasswordChange}
+                                />
+                            </View>
+                            <TouchableOpacity onPress={() => setHide(!hide)}
+                                style={{ padding: 2 }}
+                            >
+                                <Image
+                                    source={hide ? require('../../../assets/eye-password.png') : require('../../../assets/eye-password-hide.png')}
+                                    style={{ tintColor: 'gray', width: 25, height: 18 }}
+                                    resizeMode='cover'
+                                />
+                            </TouchableOpacity>
+                        </View>
                     </View>
+                    {/* </KeyboardAwareScrollView> */}
+                    <TouchableOpacity style={{ alignItems: 'center' }}
+                        onPress={() => navigate('ForgotPassword', {})}
+                    >
+                        <Text style={{ fontSize: 15, fontWeight: '500', color: 'purple' }}>Forgot password ?</Text>
+                    </TouchableOpacity>
                 </View>
-                {/* </KeyboardAwareScrollView> */}
-                <TouchableOpacity style={{ alignItems: 'center' }}>
-                    <Text style={{ fontSize: 15, fontWeight: '500', color: 'purple' }}>Forgot password ?</Text>
-                </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity style={[localStyles.buttonBottom,
-            {
-                backgroundColor: isButtonEnabled ? '#f2c601' : '#e5e5e5',
-                shadowOffset: {
-                    width: 0,
-                    height: 5,
-                },
-                shadowColor: '#000',
-                shadowOpacity: 0.2,
-                shadowRadius: 3.5,
-                elevation: 3
-            }]}
-                disabled={!isButtonEnabled}
-                onPress={() => navigate('BottomTabs', {})}
-            >
-                <Text style={{ fontSize: 17, fontWeight: '500', color: isButtonEnabled ? 'black' : 'gray' }}>
-                    Sign In
-                </Text>
-            </TouchableOpacity>
-        </SafeAreaView>
+                <View style={{ width: '100%', alignItems: 'center', height: '10%', justifyContent: 'center' }}>
+                    <TouchableOpacity style={[localStyles.buttonBottom,
+                    {
+                        backgroundColor: isFormValid ? '#f2c601' : '#e5e5e5',
+                        shadowOffset: {
+                            width: 0,
+                            height: 5,
+                        },
+                        shadowColor: '#000',
+                        shadowOpacity: 0.2,
+                        shadowRadius: 3.5,
+                        elevation: 3
+                    }]}
+                        disabled={!isFormValid}
+                        onPress={() => navigate('BottomTabs', {})}
+                    >
+                        <Text style={{ fontSize: 17, fontWeight: '500', color: isFormValid ? 'black' : 'gray' }}>
+                            Sign In
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+                {/* Divider */}
+                <View style={styles.dividerContainer}>
+                    <View style={styles.divider} />
+                    <Text style={styles.dividerContent}>OR</Text>
+                    <View style={styles.divider} />
+                </View>
+                <View style={styles.signUpWrapper}>
+                    <Text style={{ color: '#f2c601', fontSize: 15, fontWeight: '500' }}>
+                        Don't have an account
+                    </Text>
+                    <TouchableOpacity
+                        style={{ backgroundColor: '#f2c601', padding: 10, borderRadius: 10 }}
+                        onPress={() => {
+                            goPop();
+                            navigate('RegisterScreen', {});
+                        }}
+                    >
+                        <Text
+                            style={{
+                                fontSize: 14,
+                                fontWeight: '600',
+                                color: 'white'
+                            }}>
+                            Sign Up
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </KeyboardAwareScrollView>
+        </KeyboardAvoidingView>
     )
 }
 
@@ -160,5 +185,31 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         width: '85%',
         paddingVertical: 17,
+    },
+    dividerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 16,
+        marginHorizontal: 20
+    },
+    divider: {
+        flex: 1,
+        height: 1,
+        backgroundColor: '#686868',
+        marginHorizontal: 5
+    },
+    dividerContent: {
+        color: '#f2c601',
+        fontSize: 17,
+        lineHeight: 18,
+        marginHorizontal: 10
+    },
+    signUpWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 12,
+        width: '60%',
     }
 })

@@ -54,7 +54,6 @@ const BackBar = ({
                     color: colors.PRIMARY_900,
                     textTransform: 'none',
                     textAlign: 'center',
-                    fontFamily: 'Pretendard-Bold',
                 },
                 wrapperIcon: {
                     justifyContent: 'center',
@@ -71,7 +70,6 @@ const BackBar = ({
                 },
                 titleIconClose: {
                     fontSize: 16,
-                    fontFamily: 'Pretendard',
                     lineHeight: 19,
                     fontWeight: '400',
                     textAlign: 'center',

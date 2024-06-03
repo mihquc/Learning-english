@@ -4,19 +4,45 @@ import {
 import React, { useEffect, useRef, useState } from 'react'
 import ProgressBar from 'react-native-progress/Bar';
 import { SwiperFlatList } from 'react-native-swiper-flatlist';
-// import * as Tts from 'react-native-tts';
-import * as Speech from 'expo-speech';
-// import { Speech } from 'expo'
+import useNavigationService from '../../navigation/NavigationService';
+import ProgressPlay from '../../components/Load/progressBarPlay';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 const HomeScreen = () => {
     const [fetchData, setFetchData] = useState([])
-    // Speech.speak({
-    //     text: 'Helle',
-    //     voice: 'en-US'
-    // })
+    const { navigate } = useNavigationService();
     const data = [
+        page = [
+            {
+                id: 1,
+                nameTopic: 'Animals',
+                image: 'https://img.freepik.com/free-vector/wild-animal-group-white-background_1308-112351.jpg',
+                totalGames: 15,
+                gamesPlayed: 5
+            },
+            {
+                id: 2,
+                nameTopic: 'In the city',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8QWNQBZ73iGocTQkmusw4f1XpGeI-uUIj8B6zZzwrKw&s',
+                totalGames: 20,
+                gamesPlayed: 12
+            },
+            {
+                id: 3,
+                nameTopic: 'Alphabet',
+                image: 'https://illustoon.com/photo/13121.png',
+                totalGames: 25,
+                gamesPlayed: 1
+            },
+            {
+                id: 4,
+                nameTopic: 'Nature',
+                image: 'https://i.pinimg.com/736x/54/f6/fe/54f6fe85a42a39b6e57d2008cf18964f.jpg',
+                totalGames: 28,
+                gamesPlayed: 7
+            },
+        ],
         page = [
             {
                 id: 1,
@@ -79,10 +105,7 @@ const HomeScreen = () => {
         ]
 
     ]
-    const listAllVoiceOptions = async () => {
-        let voices = await Speech.getAvailableVoicesAsync();
-        console.log(voices);
-    };
+
     useEffect(() => {
         // listAllVoiceOptions();
         const newData = data.map((item) => {
@@ -132,16 +155,6 @@ const HomeScreen = () => {
         return color;
     };
 
-    const handleSpeak = (text) => {
-        Speech.speak(text,
-            options = {
-                voice: "com.apple.speech.synthesis.voice.Fred",
-                // language: 'en-US',
-                pitch: 1,
-                rate: 1.2
-            }
-        )
-    }
     const renderItemFlastlist = ({ item, index }) => {
         return (
             <TouchableOpacity
@@ -159,7 +172,9 @@ const HomeScreen = () => {
                     shadowRadius: 3.5,
                     elevation: 3
                 }}
-                onPress={() => { handleSpeak('Cat') }}
+                onPress={() => {
+                    navigate('ProgressPlay', {})
+                }}
             >
                 <View style={{ width: '60%', height: '80%', justifyContent: 'space-around', alignItems: 'center' }}>
                     <View style={{ flexDirection: 'row', width: '80%', alignItems: 'center', justifyContent: 'space-around' }}>
@@ -215,19 +230,21 @@ const HomeScreen = () => {
         )
     }
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={{ height: '100%' }}>
-                <SwiperFlatList
-                    data={fetchData}
-                    renderItem={renderItem}
-                    showPagination
-                    renderAll={true}
-                    paginationStyle={{ marginBottom: Platform.OS === 'android' ? '15%' : '10%' }}
-                    paginationStyleItemActive={{ backgroundColor: '#f1c600', width: 25, height: 10 }}
-                    paginationStyleItemInactive={{ backgroundColor: 'darkgray', width: 10, height: 10 }}
-                />
-            </View>
-        </SafeAreaView>
+        <>
+            <SafeAreaView style={styles.container}>
+                <View style={{ height: '100%' }}>
+                    <SwiperFlatList
+                        data={fetchData}
+                        renderItem={renderItem}
+                        showPagination
+                        renderAll={true}
+                        paginationStyle={{ marginBottom: Platform.OS === 'android' ? '15%' : '10%' }}
+                        paginationStyleItemActive={{ backgroundColor: '#f1c600', width: 25, height: 10 }}
+                        paginationStyleItemInactive={{ backgroundColor: 'darkgray', width: 10, height: 10 }}
+                    />
+                </View>
+            </SafeAreaView>
+        </>
     )
 }
 
