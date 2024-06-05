@@ -156,8 +156,8 @@ const RegisterScreen = () => {
                 }]}
                     disabled={!isFormValid}
                     onPress={() => {
-                        navigate('GenderScreen', {})
-                        // createAccount()
+                        // navigate('GenderScreen', {})
+                        createAccount()
                     }}
                 >
                     <Text style={{ fontSize: 17, fontWeight: '500', color: isFormValid ? 'black' : 'gray' }}>Sign Up</Text>

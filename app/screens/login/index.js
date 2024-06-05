@@ -4,6 +4,9 @@ import {
 import React, { useState } from 'react'
 import useNavigationService from '../../navigation/NavigationService'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import baseURL from '../../services/api/baseURL'
+import axios from 'axios'
+import { storage } from '../../redux/storage'
 
 const LoginScreen = () => {
     const localStyles = React.useMemo(() =>
@@ -59,6 +62,26 @@ const LoginScreen = () => {
     };
     const isFormValid = username.length > 0 && password.length > 0;
 
+    const [res, setRes] = useState([])
+    const signIn = () => {
+        const data = {
+            userName: username,
+            password: password
+        }
+        axios.post(`${baseURL}/users/signIn`, data)
+            .then((response) => {
+                console.log('response', response?.data)
+                console.log('response', response?.status)
+                if (response?.status === 200) {
+                    setRes(response?.data)
+                    storage.setItem('token', response?.token)
+                    navigate('BottomTabs', {})
+                } else {
+
+                }
+            })
+            .catch((error) => console.log('error:', error))
+    }
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -137,7 +160,10 @@ const LoginScreen = () => {
                         elevation: 3
                     }]}
                         disabled={!isFormValid}
-                        onPress={() => navigate('BottomTabs', {})}
+                        onPress={() => {
+                            signIn()
+                            // navigate('BottomTabs', {})
+                        }}
                     >
                         <Text style={{ fontSize: 17, fontWeight: '500', color: isFormValid ? 'black' : 'gray' }}>
                             Sign In
