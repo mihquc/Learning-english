@@ -4,6 +4,16 @@
         "Register": "Register",
         "Settings": "Settings",
         "Info": "Personal Info",
-        "TermsOfContract": "Hợp đồng vay"
-    }
+        "ForgotPassword": "Forgot Password",
+        "ResetPassword": "Reset Password",
+        "NewPassword": "New Password"
+    },
+    "register": {
+        "gender": "Select your gender",
+        "register": "Tạo tài khoản",
+        "birthday": "When Is Your Birthday?",
+        "agreeToTerms": "Điều khoản sử dụng dịch vụ.",
+        "agreeConsent": "Thu thập, sử dụng thông tin cá nhân.",
+        "emailService": "Quảng cáo qua e-mail"
+    },
 }

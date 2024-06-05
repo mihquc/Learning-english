@@ -21,7 +21,7 @@ const ProgressPlay = ({ }) => {
     return (
         <View style={[StyleSheet.absoluteFill, styles.container]}>
             <Image
-                source={require('../../../assets/playgame.png')}
+                source={require('../../../assets/playgame1.png')}
                 style={styles.image}
                 resizeMode='contain'
             />
@@ -31,9 +31,9 @@ const ProgressPlay = ({ }) => {
                 width={300}
                 height={10}
                 borderRadius={6}
-                color={'#69b900'}
+                color={'#f2c601'}
                 unfilledColor={'#FFFFFF'}
-                borderColor={'#FFFFFF'}
+                borderColor={'#f2c601'}
             />
         </View>
     )
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
         zIndex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 1)'
+        backgroundColor: '#302627'
     },
     text: {
         fontWeight: '500',

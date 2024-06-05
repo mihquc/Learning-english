@@ -1,0 +1,1 @@
+export default baseURL = 'https://english-learning-app.azurewebsites.net/api'
