@@ -1,9 +1,30 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
+import axios from 'axios'
+import { useSelector } from 'react-redux'
+
 import useNavigationService from '../../navigation/NavigationService'
+import baseURL from '../../services/api/baseURL'
 
 const Settings = () => {
     const { navigate } = useNavigationService();
+    const token = useSelector((state) => state.authReducer.token);
+    const logOut = () => {
+        axios.post(`${baseURL}/users/signOut`, {
+            headers: {
+                'accept': '*/*',
+                'Authorization': 'Bearer ' + token
+            }
+        })
+            .then((response) => {
+                console.log('response', response.data)
+                // console.log('response', response.status)
+                // console.log('response', response)
+                // if (response.status === 200) {
+                //     navigate('LoginScreen', {})
+                // }
+            }).catch((error) => console.error(error))
+    }
     const data = [
         {
             name: 'Personal Info',
@@ -25,8 +46,8 @@ const Settings = () => {
             name: 'Log Out',
             img: require('../../../assets/logout.png'),
             color: '#fecacb',
-            onPress: () => {
-
+            onPress: async () => {
+                await logOut()
             }
         }
     ]

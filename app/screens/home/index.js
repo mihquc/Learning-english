@@ -4,199 +4,21 @@ import {
 import React, { useEffect, useRef, useState } from 'react'
 import ProgressBar from 'react-native-progress/Bar';
 import { SwiperFlatList } from 'react-native-swiper-flatlist';
+import axios from 'axios';
+
 import useNavigationService from '../../navigation/NavigationService';
-import ProgressPlay from '../../components/Load/progressBarPlay';
+import baseURL from '../../services/api/baseURL';
+import { useSelector } from 'react-redux';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 const HomeScreen = () => {
+    const [topics, setTopics] = useState([])
     const [fetchData, setFetchData] = useState([])
     const { navigate } = useNavigationService();
-    const data = [
-        page = [
-            {
-                id: 1,
-                nameTopic: 'Animals',
-                image: 'https://img.freepik.com/free-vector/wild-animal-group-white-background_1308-112351.jpg',
-                totalGames: 15,
-                gamesPlayed: 5
-            },
-            {
-                id: 2,
-                nameTopic: 'In the city',
-                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8QWNQBZ73iGocTQkmusw4f1XpGeI-uUIj8B6zZzwrKw&s',
-                totalGames: 20,
-                gamesPlayed: 12
-            },
-            {
-                id: 3,
-                nameTopic: 'Alphabet',
-                image: 'https://illustoon.com/photo/13121.png',
-                totalGames: 25,
-                gamesPlayed: 1
-            },
-            {
-                id: 4,
-                nameTopic: 'Nature',
-                image: 'https://i.pinimg.com/736x/54/f6/fe/54f6fe85a42a39b6e57d2008cf18964f.jpg',
-                totalGames: 28,
-                gamesPlayed: 7
-            },
-        ],
-        page = [
-            {
-                id: 1,
-                nameTopic: 'Animals',
-                image: 'https://img.freepik.com/free-vector/wild-animal-group-white-background_1308-112351.jpg',
-                totalGames: 15,
-                gamesPlayed: 5
-            },
-            {
-                id: 2,
-                nameTopic: 'In the city',
-                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8QWNQBZ73iGocTQkmusw4f1XpGeI-uUIj8B6zZzwrKw&s',
-                totalGames: 20,
-                gamesPlayed: 12
-            },
-            {
-                id: 3,
-                nameTopic: 'Alphabet',
-                image: 'https://illustoon.com/photo/13121.png',
-                totalGames: 25,
-                gamesPlayed: 1
-            },
-            {
-                id: 4,
-                nameTopic: 'Nature',
-                image: 'https://i.pinimg.com/736x/54/f6/fe/54f6fe85a42a39b6e57d2008cf18964f.jpg',
-                totalGames: 28,
-                gamesPlayed: 7
-            },
-        ],
-        page = [
-            {
-                id: 1,
-                nameTopic: 'Animals',
-                image: 'https://img.freepik.com/free-vector/wild-animal-group-white-background_1308-112351.jpg',
-                totalGames: 15,
-                gamesPlayed: 5
-            },
-            {
-                id: 2,
-                nameTopic: 'In the city',
-                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8QWNQBZ73iGocTQkmusw4f1XpGeI-uUIj8B6zZzwrKw&s',
-                totalGames: 20,
-                gamesPlayed: 12
-            },
-            {
-                id: 3,
-                nameTopic: 'Alphabet',
-                image: 'https://illustoon.com/photo/13121.png',
-                totalGames: 25,
-                gamesPlayed: 1
-            },
-            {
-                id: 4,
-                nameTopic: 'Nature',
-                image: 'https://i.pinimg.com/736x/54/f6/fe/54f6fe85a42a39b6e57d2008cf18964f.jpg',
-                totalGames: 28,
-                gamesPlayed: 7
-            },
-        ]
+    const token = useSelector((state) => state.authReducer.token);
+    console.log('token: ' + token);
 
-    ]
-    const topic = [
-        {
-            id: "26a0c9d0-1534-11ef-8731-02509b688cae",
-            name: "Animals",
-            image: "",
-            numberOfGame: 12
-        },
-        {
-            id: "f0ff97e4-1dc2-11ef-8fe0-02509b688cae",
-            name: "Colors",
-            image: "a",
-            numberOfGame: 12
-        },
-        {
-            id: "f0ffb647-1dc2-11ef-8fe0-02509b688cae",
-            name: "Shapes",
-            image: "b",
-            numberOfGame: 12
-        },
-        {
-            id: "f0ffe35d-1dc2-11ef-8fe0-02509b688cae",
-            name: "School Supplies",
-            image: "c",
-            numberOfGame: 12
-        },
-        {
-            id: "f0fff99e-1dc2-11ef-8fe0-02509b688cae",
-            name: "Seasons",
-            image: "d",
-            numberOfGame: 12
-        },
-        {
-            id: "f1000d38-1dc2-11ef-8fe0-02509b688cae",
-            name: "Transportations",
-            image: "e",
-            numberOfGame: 12
-        },
-        {
-            id: "f1001c71-1dc2-11ef-8fe0-02509b688cae",
-            name: "Clothes",
-            image: "f",
-            numberOfGame: 12
-        },
-        {
-            id: "f1002ceb-1dc2-11ef-8fe0-02509b688cae",
-            name: "Weather",
-            image: "g",
-            numberOfGame: 12
-        },
-        {
-            id: "f101ab41-1dc2-11ef-8fe0-02509b688cae",
-            name: "Toys",
-            image: "h",
-            numberOfGame: 12
-        },
-        {
-            id: "f101b775-1dc2-11ef-8fe0-02509b688cae",
-            name: "Food",
-            image: "j",
-            numberOfGame: 12
-        },
-        {
-            id: "f101c500-1dc2-11ef-8fe0-02509b688cae",
-            name: "Sports",
-            image: "k",
-            numberOfGame: 12
-        },
-        {
-            id: "fa3f3087-1533-11ef-8731-02509b688cae",
-            name: "Fruits and vegetables",
-            image: "",
-            numberOfGame: 12
-        }
-    ]
-    const newArray = [];
-    for (let i = 0; i < topic.length; i += 4) {
-        const subArray = topic.slice(i, i + 4);
-        newArray.push(subArray);
-    }
-
-    // console.log(newArray);
-    useEffect(() => {
-        // listAllVoiceOptions();
-        const newData = newArray.map((subArray) => {
-            subArray.forEach((item) => {
-                item.color = generateRandomColor();
-            });
-            return subArray;
-        });
-        setFetchData(newData);
-        // console.log(newData);
-    }, [])
     const generateRandomColor = () => {
         const letters = '0123456789ABCDEF';
         let color = '#';
@@ -205,15 +27,44 @@ const HomeScreen = () => {
         }
         return color;
     };
-
+    const getAllTopic = () => {
+        axios.get(`${baseURL}/topics`)
+            .then((response) => {
+                console.log('data', response.data)
+                setTopics(response.data)
+            })
+            .catch((error) => console.error(error))
+    }
+    const customTopics = () => {
+        const newArray = [];
+        for (let i = 0; i < topics.length; i += 4) {
+            const subArray = topics.slice(i, i + 4);
+            newArray.push(subArray);
+        }
+        const newData = newArray.map((subArray) => {
+            subArray.forEach((item) => {
+                item.color = generateRandomColor();
+            });
+            return subArray;
+        });
+        setFetchData(newData);
+    }
+    // console.log(newArray);
+    useEffect(() => {
+        getAllTopic()
+    }, [])
+    useEffect(() => {
+        customTopics();
+        console.log('fetchData', fetchData)
+    }, [topics])
     const renderItemFlastlist = ({ item, index }) => {
         return (
             <TouchableOpacity
                 style={{
                     flexDirection: 'row', backgroundColor: item?.color,
                     alignItems: 'center', justifyContent: 'space-around',
-                    borderRadius: 20, width: 90 * width / 100, alignSelf: 'center', marginTop: 20,
-                    height: Platform.OS === 'android' ? 120 : 140,
+                    borderRadius: 20, width: 90 * width / 100, alignSelf: 'center', marginTop: '5%',
+                    height: height > 800 ? 19 * (80 * height / 100) / 100 : 19 * (80 * height / 100) / 100,
                     shadowOffset: {
                         width: 0,
                         height: 5,
@@ -224,7 +75,7 @@ const HomeScreen = () => {
                     elevation: 3
                 }}
                 onPress={() => {
-                    navigate('ProgressPlay', {})
+                    navigate('ProgressPlay', { id: item?.id })
                 }}
             >
                 <View style={{ width: '60%', height: '80%', justifyContent: 'space-around', alignItems: 'center' }}>
@@ -272,11 +123,12 @@ const HomeScreen = () => {
     }
     const renderItem = ({ item, index }) => {
         return (
-            <View style={{ width: width, alignItems: 'center' }}>
+            <View style={{ width: width, alignItems: 'center', height: '100%' }}>
                 <FlatList
                     data={item}
                     key={() => index.toString()}
                     renderItem={renderItemFlastlist}
+                    showsVerticalScrollIndicator={false}
                 />
             </View>
         )
@@ -284,13 +136,13 @@ const HomeScreen = () => {
     return (
         <>
             <SafeAreaView style={styles.container}>
-                <View style={{ height: '100%' }}>
+                <View style={{ height: 75 * height / 100 }}>
                     <SwiperFlatList
                         data={fetchData}
                         renderItem={renderItem}
                         showPagination
                         renderAll={true}
-                        paginationStyle={{ marginBottom: Platform.OS === 'android' ? '15%' : '10%' }}
+                        paginationStyle={{ justifyContent: 'center', height: '3%', alignItems: 'center', position: 'relative' }}
                         paginationStyleItemActive={{ backgroundColor: '#f1c600', width: 25, height: 10 }}
                         paginationStyleItemInactive={{ backgroundColor: 'darkgray', width: 10, height: 10 }}
                     />

@@ -1,9 +1,11 @@
 import { SafeAreaView, StyleSheet, Text, View, Image, TextInput, Platform, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import useNavigationService from '../../navigation/NavigationService'
-import baseURL from '../../services/api/baseURL'
 import axios from 'axios'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+
+import useNavigationService from '../../navigation/NavigationService'
+import baseURL from '../../services/api/baseURL'
+import Loader from '../../components/Load/loader'
 
 const RegisterScreen = () => {
     const localStyles = React.useMemo(() =>
@@ -47,10 +49,12 @@ const RegisterScreen = () => {
                 marginTop: 20
             }
         }), [])
+    const [progress, setProgress] = useState(false)
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [hide, setHide] = useState(true)
+    const [res, setRes] = useState();
     const { navigate, goBack, goPop } = useNavigationService();
     const handleUserNameChange = (text) => {
         setUsername(text);
@@ -62,17 +66,25 @@ const RegisterScreen = () => {
         setPassword(text);
     };
     const isFormValid = username.length > 0 && email.length > 0 && password.length > 0;
-    const data = {
-        userName: username,
-        email: email,
-        password: password
-    }
     const createAccount = () => {
+        const data = {
+            userName: username,
+            email: email,
+            password: password
+        }
         axios.post(`${baseURL}/users/register`, data)
             .then((response) => {
-                console.log('response', response)
+                console.log('response', response.data)
+                setRes(response.data)
+                if (response.status === 200) {
+                    navigate('GenderScreen', { token: response.data?.token })
+                    setProgress(false)
+                }
             })
-            .catch((error) => console.log('error:', error))
+            .catch((error) => {
+                console.log('error:', error)
+                setProgress(false)
+            })
     }
     // useEffect(() => {
     //     createAccount();
@@ -156,7 +168,7 @@ const RegisterScreen = () => {
                 }]}
                     disabled={!isFormValid}
                     onPress={() => {
-                        // navigate('GenderScreen', {})
+                        setProgress(true)
                         createAccount()
                     }}
                 >
@@ -190,6 +202,7 @@ const RegisterScreen = () => {
                     </TouchableOpacity>
                 </View>
             </KeyboardAwareScrollView >
+            {progress ? <Loader indeterminate={progress} /> : null}
         </KeyboardAvoidingView>
     )
 }

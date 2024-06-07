@@ -2,17 +2,45 @@ import { StyleSheet, Text, View, Image, Pressable, TouchableOpacity, Platform, M
 import React, { useState } from 'react'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import moment from 'moment'
+import axios from 'axios'
+
 import useNavigationService from '../../../navigation/NavigationService'
+import { useRoute } from '@react-navigation/native'
 
 const BirthdayScreen = () => {
     const [birthday, setBirthday] = useState(new Date());
     const [show, setShow] = useState(false);
+    const route = useRoute()
+    const token = route.params?.token;
+    const id = route.params?.id;
+    console.log(route.params)
     const onChange = (event, selectedDate) => {
         setBirthday(selectedDate);
         setShow(false);
     };
     const [modalVisible, setModalVisible] = useState(false);
     const { navigate, goPop, goBack, goPopToTop } = useNavigationService();
+
+    const updateProfile = () => {
+        const data = {
+            birthday: moment(birthday).format('YYYY-MM-DD'),
+        }
+        axios.put(`${baseURL}/profiles/${id}`, data,
+            {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json',
+                }
+            }
+        )
+            .then((response) => {
+                console.log('response', response.data)
+                if (response.status === 200) {
+                    setModalVisible(true)
+                }
+            }).catch((error) => console.error('error:', error))
+    }
+
     return (
         <View style={styles.container}>
             <View style={{ width: '100%', height: '50%', alignItems: 'center', justifyContent: 'center' }}>
@@ -67,7 +95,7 @@ const BirthdayScreen = () => {
                         shadowRadius: 3.5,
                         elevation: 3
                     }}
-                    onPress={() => navigate('BirthdayScreen', {})}
+                    onPress={() => updateProfile()}
                 >
                     <Text style={{ fontSize: 18, fontWeight: '500', color: '#FFFFFF' }}>Next</Text>
                 </TouchableOpacity>

@@ -1,12 +1,17 @@
 import {
-    SafeAreaView, StyleSheet, Text, View, Image, TextInput, Platform, TouchableOpacity, KeyboardAvoidingView
+    SafeAreaView, StyleSheet, Text, View, Image, TextInput, Platform, TouchableOpacity, KeyboardAvoidingView,
+    Alert
 } from 'react-native'
 import React, { useState } from 'react'
 import useNavigationService from '../../navigation/NavigationService'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import baseURL from '../../services/api/baseURL'
 import axios from 'axios'
-import { storage } from '../../redux/storage'
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch, useSelector } from 'react-redux'
+
+import baseURL from '../../services/api/baseURL'
+import Loader from '../../components/Load/loader'
+import storage from '../../redux/storage'
 
 const LoginScreen = () => {
     const localStyles = React.useMemo(() =>
@@ -48,6 +53,8 @@ const LoginScreen = () => {
                 paddingVertical: 15,
             }
         }), [])
+    const dispatch = useDispatch();
+    const [progress, setProgress] = useState(false)
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [hide, setHide] = useState(true)
@@ -63,7 +70,13 @@ const LoginScreen = () => {
     const isFormValid = username.length > 0 && password.length > 0;
 
     const [res, setRes] = useState([])
-    const signIn = () => {
+    const setToken = (token) => {
+        dispatch({
+            type: 'SET_TOKEN',
+            token: token
+        })
+    }
+    const signIn = async () => {
         const data = {
             userName: username,
             password: password
@@ -72,15 +85,23 @@ const LoginScreen = () => {
             .then((response) => {
                 console.log('response', response?.data)
                 console.log('response', response?.status)
+                console.log('response', response)
                 if (response?.status === 200) {
                     setRes(response?.data)
-                    storage.setItem('token', response?.token)
+                    console.log('response', response.data?.token)
+                    AsyncStorage.setItem('token', response?.data?.token)
+                    setToken(response?.data?.token)
                     navigate('BottomTabs', {})
-                } else {
-
+                    setProgress(false)
+                } else if (response?.status === 401) {
+                    Alert.alert('Incorrect login information, Please try again!')
+                    setProgress(false)
                 }
             })
-            .catch((error) => console.log('error:', error))
+            .catch((error) => {
+                console.log('error:', error);
+                setProgress(false)
+            })
     }
     return (
         <KeyboardAvoidingView
@@ -161,8 +182,8 @@ const LoginScreen = () => {
                     }]}
                         disabled={!isFormValid}
                         onPress={() => {
+                            setProgress(true)
                             signIn()
-                            // navigate('BottomTabs', {})
                         }}
                     >
                         <Text style={{ fontSize: 17, fontWeight: '500', color: isFormValid ? 'black' : 'gray' }}>
@@ -198,6 +219,7 @@ const LoginScreen = () => {
                     </TouchableOpacity>
                 </View>
             </KeyboardAwareScrollView>
+            {progress ? <Loader indeterminate={progress} /> : null}
         </KeyboardAvoidingView>
     )
 }
