@@ -1,8 +1,18 @@
 import { Button, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import * as Speech from 'expo-speech';
 import { Audio } from 'expo-av';
+import { AreaChart, Grid } from 'react-native-svg-charts';
+import * as shape from 'd3-shape';
+import { Path } from 'react-native-svg'
 import { useDispatch, useSelector } from 'react-redux'
+import { useRoute } from '@react-navigation/native';
+import axios from 'axios';
+
+import Waveform from '../../components/wave/Waveform';
+import ProgressGame from '../../components/header/ProgressGame';
+import baseURL from '../../services/api/baseURL';
+
 
 const handleSpeak = (text) => {
     Speech.speak(text,
@@ -17,37 +27,31 @@ const handleSpeak = (text) => {
 const GameScreen = () => {
     const answer = useSelector((state) => state.gameReducer.selectAnswers);
     const rightAnswer = useSelector((state) => state.gameReducer.rightAnswers);
+    const token = useSelector((state) => state.authReducer.token);
+    const [games, setGames] = useState([]);
+    const route = useRoute();
+    const id = route.params?.id;
+    const getAllGames = () => {
+        axios.get(`${baseURL}/topics/${id}/games`, {
+            headers: {
+                'Authorization': 'bearer ' + token,
+            }
+        })
+            .then((response) => {
+                console.log('response', response.data)
+                setGames(response.data)
+            })
+            .catch((error) => console.log('error', error))
+    }
+    useEffect(() => {
+        getAllGames();
+    }, [])
     // console.log(rightAnswer)
     // console.log(answer)
     const game = [
         {
             id: 1,
-            Kind: 'Picture Choice',
-            Question: 'Which animal says meow?',
-            RightAnswer: 'Cat',
-            SoundFilePath: '',
-            TopicId: '',
-        },
-        {
-            id: 2,
-            Kind: 'Sentence Scramble',
-            Question: '',
-            RightAnswer: 'The cat sat on the mat.',
-            SoundFilePath: '',
-            TopicId: '',
-        },
-        {
-            id: 3,
-            Kind: '',
-            Question: '',
-            RightAnswer: '',
-            SoundFilePath: '',
-            TopicId: '',
-        }
-    ]
-    const questions = [
-        {
-            type: 'multiple-choice', question: 'What is the capital of France?',
+            kind: 'Picture Choice', question: 'What is the capital of France?',
             options: [
                 { title: 'Dog', img: 'https://i.pinimg.com/736x/f6/7d/0e/f67d0eda913232d983e24d2ad4440d96.jpg' },
                 { title: 'Cat', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTw7WgnvCYg4a6RNT6H5hkwnAIXXFP40zWlCQ&s' },
@@ -56,9 +60,10 @@ const GameScreen = () => {
             ],
             rightAnswer: 'Dog'
         },
-        { type: 'word-order', question: 'Translate this sentence', words: ['drink', 'I', 'water', 'and', 'coffee'], rightAnswer: 'I drink coffee and water' },
+        { id: 1, kind: 'Sentence Scramble', question: 'Translate this sentence', words: ['drink', 'I', 'water', 'and', 'coffee'], rightAnswer: 'I drink coffee and water' },
         {
-            type: 'Sentence Choice', question: 'The dog is brown.',
+            id: 1,
+            kind: 'Sentence Choice', question: 'The dog is brown.',
             options: [
                 { title: 'The dog is brown.' },
                 { title: 'The dog is black and white.' },
@@ -67,19 +72,138 @@ const GameScreen = () => {
             ],
             rightAnswer: 'The dog is brown.'
         },
-        { type: 'pronunciation', question: 'Pronounce the word "Bonjour"', rightAnswer: 'I drink coffee and water' },
+        { id: 1, kind: 'Echo Repeat', question: 'Pronounce the word "Bonjour"', rightAnswer: 'I drink coffee and water' },
     ];
+    const questions = [
+        {
+            id: "08dc813c-26a4-4fa5-8674-ba6081caa464",
+            kind: "Picture Choice",
+            question: "Which animal says meow?",
+            rightAnswer: "Cat",
+            soundFilePath: null,
+            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
+            options: []
+        },
+        {
+            id: "08dc813c-26b0-43f1-826e-3ed82271e247",
+            kind: "Picture Choice",
+            question: "Which animal is known for its long neck?",
+            rightAnswer: "Giraffe",
+            soundFilePath: null,
+            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
+            options: []
+        },
+        {
+            id: "08dc813c-26b0-44bb-8746-f84d9f5f5653",
+            kind: "Picture Choice",
+            question: "Which animal lives in the water and has fins?",
+            rightAnswer: "Fish",
+            soundFilePath: null,
+            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
+            options: []
+        },
+        {
+            id: "08dc813c-26b0-44f3-89f9-33c86aa9b7ab",
+            kind: "Sentence Scramble",
+            question: null,
+            rightAnswer: "The cat sat on the mat.",
+            soundFilePath: null,
+            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
+            options: []
+        },
+        {
+            id: "08dc813c-26b0-4510-8ded-fbb4d2613e78",
+            kind: "Sentence Choice",
+            question: null,
+            rightAnswer: "The dog is brown.",
+            soundFilePath: null,
+            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
+            options: []
+        },
+        {
+            id: "08dc813c-26b0-452e-8228-9da34b22befa",
+            kind: "Echo Repeat",
+            question: null,
+            rightAnswer: "The cow says moo.",
+            soundFilePath: null,
+            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
+            options: []
+        },
+        {
+            id: "08dc813c-26b0-4542-84c1-3b138d2af0ca",
+            kind: "Sentence Scramble",
+            question: null,
+            rightAnswer: "The horse is a mammal.",
+            soundFilePath: null,
+            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
+            options: []
+        },
+        {
+            id: "08dc813c-26b0-4556-8a22-cdf8be607442",
+            kind: "Sentence Choice",
+            question: null,
+            rightAnswer: "The pig is a farm animal.",
+            soundFilePath: null,
+            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
+            options: []
+        },
+        {
+            id: "08dc813c-26b0-456e-8c5c-0d4864b79191",
+            kind: "Echo Repeat",
+            question: null,
+            rightAnswer: "The sheep says baa.",
+            soundFilePath: null,
+            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
+            options: []
+        },
+        {
+            id: "08dc813c-26b0-4582-8330-70d6f437298a",
+            kind: "Sentence Scramble",
+            question: null,
+            rightAnswer: "The lion is the king of the jungle.",
+            soundFilePath: null,
+            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
+            options: []
+        },
+        {
+            id: "08dc813c-26b0-45a8-81da-dfa89985c4c7",
+            kind: "Sentence Choice",
+            question: null,
+            rightAnswer: "The elephant is the largest land animal.",
+            soundFilePath: null,
+            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
+            options: []
+        },
+        {
+            id: "08dc813c-26b0-45db-8c44-8838314f44f7",
+            kind: "Echo Repeat",
+            question: null,
+            rightAnswer: "The monkey says ooh ooh aa aa.",
+            soundFilePath: null,
+            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
+            options: []
+        }
+    ]
     const [selectedAnswer, setSelectedAnswer] = useState(null)
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [checkAnswer, setCheckAnswer] = useState(false);
     const [isCorrectAnswer, setCorrectAnswer] = useState(null);
+    const [progress, setProgress] = useState()
     const handleNext = () => {
+        // if(currentQuestionIndex === games.length){
+
+        // }
         setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setProgress((currentQuestionIndex + 1) / games.length)
+        console.log('progress', progress)
     };
+    console.log('currentQuestionIndex:', currentQuestionIndex)
+    console.log('progress', progress)
+    console.log(games.length)
     const renderQuestion = () => {
-        const question = questions[currentQuestionIndex];
-        switch (question.type) {
-            case 'multiple-choice':
+        const question = games[currentQuestionIndex];
+        switch (question?.kind) {
+            case 'Picture Choice':
                 return <MultipleChoiceQuestion
                     question={question}
                     onNext={handleNext}
@@ -87,7 +211,7 @@ const GameScreen = () => {
                     selectedAnswer={selectedAnswer}
                     checkAnswer={checkAnswer}
                 />;
-            case 'word-order':
+            case 'Sentence Scramble':
                 return <WordOrderQuestion
                     question={question} onNext={handleNext}
                     setSelectedAnswer={setSelectedAnswer}
@@ -102,20 +226,26 @@ const GameScreen = () => {
                     selectedAnswer={selectedAnswer}
                     checkAnswer={checkAnswer}
                 />;
-            case 'pronunciation':
-                return <PronunciationQuestion question={question} onNext={handleNext} />;
+            case 'Echo Repeat':
+                return <PronunciationQuestion
+                    question={question}
+                    setSelectedAnswer={setSelectedAnswer}
+                />;
             default:
                 return null;
         }
     };
     return (
         <SafeAreaView style={styles.container}>
+            <View style={{ width: '100%', height: '7%' }}>
+                <ProgressGame style={{ paddingHorizontal: 17 }} isIconBack progress={progress} />
+            </View>
             {renderQuestion()}
             <View style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'flex-end', borderWidth: 1 }}>
                 {checkAnswer && (
                     <View style={{
                         width: '100%', alignItems: 'center', backgroundColor: isCorrectAnswer ? '#f2c601' : '#ff6060',
-                        height: '80%', justifyContent: 'space-around', borderTopLeftRadius: 20, borderTopRightRadius: 20
+                        height: '90%', justifyContent: 'space-around', borderTopLeftRadius: 20, borderTopRightRadius: 20
                     }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%' }}>
                             <Image
@@ -182,7 +312,7 @@ const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
         })
-    }, [])
+    }, [question])
     const selectAnswers = (answer) => {
         dispatch({
             type: 'SELECT_ANSWER',
@@ -203,7 +333,7 @@ const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
         setSelectedAnswer(index);
     }
     return (
-        <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '90%', height: '75%' }}>
+        <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '90%', height: '70%' }}>
             <Text style={{ fontSize: 17, fontWeight: '600' }}>{question.question}</Text>
             <TouchableOpacity style={{
                 width: 'auto', flexDirection: 'row', alignItems: 'center',
@@ -220,12 +350,13 @@ const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
             {rows.map((row, rowIndex) => (
                 <View key={rowIndex} style={styles.row}>
                     {row.map((option, index) => {
+                        console.log('option', option)
                         const optionIndex = rowIndex * 2 + index;
                         const isSelected = optionIndex === selectedAnswer;
                         return (
                             <TouchableOpacity
                                 key={index}
-                                onPress={() => { handleSelect(option.title, optionIndex) }}
+                                onPress={() => { handleSelect(option.name, optionIndex) }}
                                 style={[styles.option, { borderColor: isSelected ? '#f2c601' : 'gray', borderWidth: isSelected ? 3 : 1 }]}
                                 disabled={checkAnswer}
                             >
@@ -233,7 +364,7 @@ const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
                                     source={{ uri: option.img }}
                                     style={styles.image}
                                 />
-                                <Text style={styles.optionText}>{option.title}</Text>
+                                <Text style={styles.optionText}>{option.name}</Text>
                             </TouchableOpacity>
                         )
                     })}
@@ -250,13 +381,16 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
     const [unselectedWords, setUnselectedWords] = useState([]);
     const dispatch = useDispatch();
 
+    console.log('option:', question.options)
+    const words = question.options.map(item => item.name);
+    console.log('words:', words)
     useEffect(() => {
-        setUnselectedWords(shuffleArray([...question.words]));
+        setUnselectedWords(shuffleArray([...words]));
         dispatch({
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
         })
-    }, []);
+    }, [question]);
     const selectAnswers = () => {
         const userAnswerString = selectedWords.join(' ');
         dispatch({
@@ -287,7 +421,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
     };
     return (
         <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '90%', height: '70%' }}>
-            <Text style={{ fontSize: 17, fontWeight: '600' }}>{question.question}</Text>
+            <Text style={{ fontSize: 17, fontWeight: '600', textAlign: 'center' }}>{question.question}</Text>
             <TouchableOpacity style={{
                 width: 'auto', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'
             }}
@@ -324,65 +458,98 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
         </View>
     );
 };
-const PronunciationQuestion = ({ question, onNext }) => {
+const PronunciationQuestion = ({ question, onNext, setSelectedAnswer }) => {
     const [recording, setRecording] = useState();
-    const [recordings, setRecordings] = useState([]);
-    const [message, setMessage] = useState("");
+    const [soundUri, setSoundUri] = useState('');
+    const [waveformData, setWaveformData] = useState([]);
+    const intervalId = useRef(null);
+
+    const token = useSelector((state) => state.authReducer.token);
+
+    useEffect(() => {
+        return () => {
+            if (intervalId.current) {
+                clearInterval(intervalId.current);
+                console.log('Interval cleared on unmount');
+            }
+        };
+    }, []);
+
     const startRecording = async () => {
         try {
-            const permission = await Audio.requestPermissionsAsync();
-
-            if (permission.status === "granted") {
-                await Audio.setAudioModeAsync({
-                    allowsRecordingIOS: true,
-                    playsInSilentModeIOS: true
-                });
-
-                const { recording } = await Audio.Recording.createAsync(
-                    Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
-                );
-
-                setRecording(recording);
-            } else {
-                setMessage("Please grant permission to app to access microphone");
+            const { granted } = await Audio.requestPermissionsAsync();
+            if (!granted) {
+                console.log('Permission to access audio recording denied');
+                return;
             }
+
+            // Cấu hình audio mode
+            await Audio.setAudioModeAsync({
+                allowsRecordingIOS: true,
+                playsInSilentModeIOS: true,
+            });
+
+            const { recording } = await Audio.Recording.createAsync(
+                Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+            );
+
+            setRecording(recording);
+
+            intervalId.current = setInterval(() => {
+                updateWaveformData();
+            }, 100);
+            console.log('Interval started with id:', intervalId.current);
         } catch (err) {
             console.error('Failed to start recording', err);
         }
-    }
-    const stopRecording = async () => {
-        setRecording(undefined);
-        await recording.stopAndUnloadAsync();
-        console.log('recording:', recording)
-        let updatedRecordings = [...recordings];
-        const { sound, status } = await recording.createNewLoadedSoundAsync();
-        updatedRecordings.push({
-            sound: sound,
-            duration: getDurationFormatted(status.durationMillis),
-            file: recording.getURI()
-        });
+    };
 
-        setRecordings(updatedRecordings);
+    const stopRecording = async () => {
+        try {
+            if (recording) {
+                await recording.stopAndUnloadAsync();
+                const uri = recording.getURI();
+                setSoundUri(uri);
+                console.log('Recording stopped and stored at:', uri);
+                setRecording(null);
+                setSelectedAnswer(uri)
+                if (intervalId.current) {
+                    clearInterval(intervalId.current);
+                    console.log('Interval cleared with id:', intervalId.current);
+                    intervalId.current = null;
+                }
+            }
+        } catch (err) {
+            console.error('Failed to stop recording', err);
+        }
+    };
+    const updateWaveformData = () => {
+        const data = Array.from({ length: 40 }, () => Math.random() * 10 - 5);
+        setWaveformData(data);
+        console.log('Updated waveformData:', data);
+    };
+
+    // api
+    const getTextFromSpeech = () => {
+        axios.get(`${baseURL}/games/${question?.id}/upload/voice`, soundUri, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': 'Bearer ' + token
+            }
+        })
+            .then((response) => {
+                console.log(response.data)
+                // setSelectedAnswer()
+            })
     }
-    const getDurationFormatted = (millis) => {
-        const minutes = millis / 1000 / 60;
-        const minutesDisplay = Math.floor(minutes);
-        const seconds = Math.round((minutes - minutesDisplay) * 60);
-        const secondsDisplay = seconds < 10 ? `0${seconds}` : seconds;
-        return `${minutesDisplay}:${secondsDisplay}`;
-    }
-    const getRecordingLines = () => {
-        return recordings.map((recordingLine, index) => {
-            return (
-                <View key={index} style={styles.row1}>
-                    <Text style={styles.fill}>Recording {index + 1} - {recordingLine.duration}</Text>
-                    <Button style={styles.button} onPress={() => recordingLine.sound.replayAsync()} title="Play"></Button>
-                    <Button style={styles.button} onPress={() => Sharing.shareAsync(recordingLine.file)} title="Share"></Button>
-                </View>
-            );
-        });
-    }
-    console.log('recordings:', recordings)
+    const Line = ({ line }) => (
+        <Path
+            key={'line'}
+            d={line}
+            stroke={'#f2c601'}
+            fill={'none'}
+        />
+    )
     return (
         <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '90%', height: '70%' }}>
             <Text style={{ fontSize: 17, fontWeight: '600' }}>{question.question}</Text>
@@ -412,9 +579,19 @@ const PronunciationQuestion = ({ question, onNext }) => {
                         resizeMode='contain'
                     />
                 </TouchableOpacity>
-                <Text style={{ color: 'gray', fontSize: 15 }}>Tap to speak</Text>
+                <Text style={{ color: 'gray', fontSize: 15 }}>{!recording ? 'Tap to speak' : 'Tap to stop'}</Text>
             </View>
-            {/* {getRecordingLines()} */}
+            {waveformData.length > 0 && (
+                <AreaChart
+                    style={{ height: 90, width: 300, borderWidth: 1, borderColor: '#f2c601', borderRadius: 10 }}
+                    data={waveformData}
+                    contentInset={{ top: 30, bottom: 20, color: '#f2c601' }}
+                    curve={shape.curveNatural}
+                    svg={{ fill: '#f2c601', stroke: '#f2c601' }}
+                >
+                    <Line />
+                </AreaChart>
+            )}
         </View>
     );
 };
@@ -425,7 +602,7 @@ const SentenceChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
         })
-    }, [])
+    }, [question])
     const selectAnswers = (answer) => {
         dispatch({
             type: 'SELECT_ANSWER',
@@ -437,9 +614,10 @@ const SentenceChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
         selectAnswers(text);
         setSelectedAnswer(index);
     }
+    console.log('question.options', question.options)
     return (
-        <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '90%', height: '75%' }}>
-            <Text style={{ fontSize: 17, fontWeight: '600' }}>{question.question}</Text>
+        <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '90%', height: '70%' }}>
+            <Text style={{ fontSize: 17, fontWeight: '600', textAlign: 'center' }}>{question.question}</Text>
             <TouchableOpacity style={{
                 width: 'auto', flexDirection: 'row', alignItems: 'center',
                 alignSelf: 'flex-start', justifyContent: 'space-between'
@@ -455,10 +633,10 @@ const SentenceChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
             {question.options.map((option, index) => (
                 <TouchableOpacity key={index} style={[styles.optionRow,
                 { borderWidth: selectedAnswer === index ? 3 : 1, borderColor: selectedAnswer === index ? '#f2c601' : 'gray' }]}
-                    onPress={() => handleSelect(option.title, index)}
+                    onPress={() => handleSelect(option?.name, index)}
                     disabled={checkAnswer}
                 >
-                    <Text style={styles.optionText}>{option.title}</Text>
+                    <Text style={styles.optionText}>{option?.name}</Text>
                 </TouchableOpacity>
             ))}
         </View>

@@ -15,7 +15,7 @@ const BeginScreen = () => {
                 textHeader: {
                     fontSize: 24,
                     fontWeight: '600',
-                    borderWidth: 0.2,
+                    borderWidth: 1,
                     padding: 12,
                     borderRadius: 5,
                 },

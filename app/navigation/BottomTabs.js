@@ -16,6 +16,8 @@ const Tab = createBottomTabNavigator();
 const BottomTabs = () => {
     const labelOrIconColor = (focused) => (focused ? '#f1c600' : '#ffffff');
     const dimensionWidth = Dimensions.get('window').width;
+    const dimensionHeight = Dimensions.get('window').height;
+    console.log(dimensionHeight)
     const localStyles = React.useMemo(
         () =>
             StyleSheet.create({
@@ -57,13 +59,13 @@ const BottomTabs = () => {
             screenOptions={{
                 tabBarStyle: {
                     position: 'absolute',
-                    bottom: 20,
+                    bottom: '2%',
                     right: 20,
                     left: 20,
                     elevation: 0,
                     backgroundColor: '#000000',
                     borderRadius: 15,
-                    height: 70,
+                    height: '10%',
                     ...styles.shadow,
                 }
             }}

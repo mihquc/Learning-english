@@ -1,10 +1,53 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import useNavigationService from '../../../navigation/NavigationService';
+import { useRoute } from '@react-navigation/native';
+import baseURL from '../../../services/api/baseURL';
+import axios from 'axios';
 
 const GenderScreen = () => {
     const [selectGender, setSelectGender] = useState(true)
     const { navigate, goBack, goPop } = useNavigationService();
+    const route = useRoute();
+    const token = route.params?.token;
+    const [user, setUser] = useState()
+    console.log('token:', route.params?.token)
+    const getProfile = () => {
+        axios.get(`${baseURL}/profiles`, {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        })
+            .then((response) => {
+                console.log('response', response.data)
+                setUser(response.data)
+            })
+            .catch((error) => {
+                console.log('error:', error)
+            })
+    }
+    const updateProfile = () => {
+        const data = {
+            sex: selectGender,
+        }
+        axios.put(`${baseURL}/profiles/${user?.id}`, data,
+            {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json',
+                }
+            }
+        )
+            .then((response) => {
+                console.log('response', response.data)
+                if (response.status === 200) {
+                    navigate('BirthdayScreen', { token: token, id: user?.id });
+                }
+            }).catch((error) => console.error('error:', error))
+    }
+    useEffect(() => {
+        getProfile();
+    }, [])
     return (
         <View style={styles.container}>
             <View style={{ width: '100%', height: '40%', alignItems: 'center', justifyContent: 'flex-end' }}>
@@ -52,7 +95,7 @@ const GenderScreen = () => {
                         shadowRadius: 3.5,
                         elevation: 3
                     }}
-                    onPress={() => navigate('BirthdayScreen', {})}
+                    onPress={() => updateProfile()}
                 >
                     <Text style={{ fontSize: 18, fontWeight: '500', color: '#FFFFFF' }}>Next</Text>
                 </TouchableOpacity>

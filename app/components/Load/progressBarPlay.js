@@ -2,10 +2,13 @@ import { Image, StyleSheet, Text, View } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import ProgressBar from 'react-native-progress/Bar';
 import useNavigationService from '../../navigation/NavigationService';
+import { useRoute } from '@react-navigation/native';
 
 const ProgressPlay = ({ }) => {
     const { navigate } = useNavigationService();
+    const route = useRoute();
     const [progress, setProgress] = useState(0);
+    const id = route.params?.id;
     useEffect(() => {
         let interval;
         if (progress < 1) {
@@ -14,7 +17,7 @@ const ProgressPlay = ({ }) => {
             }, 200);
         } else {
             clearInterval(interval);
-            navigate('GameScreen', {});
+            navigate('GameScreen', { id: id });
         }
         return () => clearInterval(interval);
     }, [progress, navigate]);

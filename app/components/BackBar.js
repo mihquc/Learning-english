@@ -80,7 +80,7 @@ const BackBar = ({
         [],
     );
 
-    const imagesClose = isImageClose ? isImageClose : require('../../assets/icon-close.png');
+    // const imagesClose = isImageClose ? isImageClose : require('../../assets/icon-close.png');
     const styleIconClose = isImageClose ? localStyles.iconNotification : localStyles.iconBack;
 
     return (
@@ -126,7 +126,7 @@ const BackBar = ({
                 >
                     {isIconClose &&
                         (typeof isIconClose === 'boolean' ? (
-                            <Image source={imagesClose} style={[styleIconClose]} resizeMode="contain" />
+                            <Image source={require('../../assets/icon_back.png')} style={[styleIconClose]} resizeMode="contain" />
                         ) : (
                             <View
                                 style={[
