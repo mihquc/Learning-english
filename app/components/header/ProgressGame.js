@@ -148,7 +148,7 @@ const ProgressGame = ({
                         {/* <Image
                             source={require('../../../assets/congra.png')}
                         /> */}
-                        <Text style={styless.modalText}>You will lose all progress of this topic if you exit now.</Text>
+                        <Text style={styless.modalText}>Do you want to continue the game?</Text>
                         <Pressable
                             style={[styless.button, styless.buttonClose]}
                             onPress={() => {
@@ -157,11 +157,11 @@ const ProgressGame = ({
                             <Text style={styless.textStyle}>Continue</Text>
                         </Pressable>
                         <Pressable
-                            style={[styless.buttonClose, { backgroundColor: 'white', padding: 10, }]}
+                            style={[styless.buttonClose, { backgroundColor: '#302627', padding: 10, }]}
                             onPress={() => {
                                 goPopMultiple(2)
                             }}>
-                            <Text style={[styless.textStyle, { color: 'red' }]}>Stop</Text>
+                            <Text style={[styless.textStyle, { color: '#f2c601' }]}>Stop</Text>
                         </Pressable>
                     </View>
                 </View>
@@ -184,12 +184,12 @@ const styless = StyleSheet.create({
     },
     modalView: {
         margin: 20,
-        backgroundColor: 'white',
+        backgroundColor: '#302627',
         borderRadius: 20,
         width: '90%',
         height: '30%',
         alignItems: 'center',
-        justifyContent: 'space-around',
+        justifyContent: 'space-evenly',
         shadowColor: '#000',
         shadowOffset: {
             width: 0,

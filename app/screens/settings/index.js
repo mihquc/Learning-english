@@ -1,29 +1,33 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
 
 import useNavigationService from '../../navigation/NavigationService'
 import baseURL from '../../services/api/baseURL'
+import Loader from '../../components/Load/loader'
 
 const Settings = () => {
-    const { navigate } = useNavigationService();
+    const [progress, setProgress] = useState(false)
+    const { navigate, goPopToTop, goPop } = useNavigationService();
     const token = useSelector((state) => state.authReducer.token);
+    console.log('token:' + token);
     const logOut = () => {
-        axios.post(`${baseURL}/users/signOut`, {
+        axios.post(`${baseURL}/users/signOut`, {}, {
             headers: {
-                'accept': '*/*',
+                'Accept': 'text/plain',
                 'Authorization': 'Bearer ' + token
             }
         })
             .then((response) => {
                 console.log('response', response.data)
-                // console.log('response', response.status)
-                // console.log('response', response)
-                // if (response.status === 200) {
-                //     navigate('LoginScreen', {})
-                // }
-            }).catch((error) => console.error(error))
+                if (response.status === 200) {
+                    goPopToTop();
+                    goPop();
+                }
+            }).catch((error) => {
+                console.error(error)
+            })
     }
     const data = [
         {
@@ -47,6 +51,7 @@ const Settings = () => {
             img: require('../../../assets/logout.png'),
             color: '#fecacb',
             onPress: async () => {
+                setProgress(true)
                 await logOut()
             }
         }
@@ -90,6 +95,7 @@ const Settings = () => {
                 </TouchableOpacity>
             )
             )}
+            {progress ? <Loader indeterminate={progress} /> : null}
         </View>
     )
 }

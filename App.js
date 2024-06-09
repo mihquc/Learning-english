@@ -11,6 +11,7 @@ import GameScreen from './app/screens/games';
 import { Provider } from 'react-redux';
 import { store } from './app/redux/store';
 import ProgressPlay from './app/components/Load/progressBarPlay';
+import CompleteGame from './app/components/complete/CompleteGame';
 
 export default function App() {
   const [loading, setloading] = useState(false);
@@ -51,6 +52,10 @@ const Tab = () => {
           <Stack.Screen
             name='ProgressPlay'
             component={ProgressPlay}
+          />
+          <Stack.Screen
+            name='CompleteGame'
+            component={CompleteGame}
           />
         </Stack.Navigator>
       </NavigationContainer>
