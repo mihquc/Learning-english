@@ -1,5 +1,6 @@
 const initState = {
     token: '',
+    user: []
 }
 
 const AuthReducer = (state = initState, payload) => {
@@ -9,11 +10,11 @@ const AuthReducer = (state = initState, payload) => {
                 ...state,
                 token: payload.token,
             }
-        // case 'RIGHT_ANSWER':
-        //     return {
-        //         ...state,
-        //         rightAnswers: payload.rightAnswers,
-        //     }
+        case 'SET_USER':
+            return {
+                ...state,
+                user: payload.user,
+            }
         default:
             return state;
     }

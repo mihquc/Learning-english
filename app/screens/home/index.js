@@ -1,23 +1,47 @@
 import {
     FlatList, Image, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Dimensions, ScrollView
 } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useFocusEffect } from '@react-navigation/native';
 import ProgressBar from 'react-native-progress/Bar';
 import { SwiperFlatList } from 'react-native-swiper-flatlist';
 import axios from 'axios';
 
 import useNavigationService from '../../navigation/NavigationService';
 import baseURL from '../../services/api/baseURL';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 const HomeScreen = () => {
     const [topics, setTopics] = useState([])
     const [fetchData, setFetchData] = useState([])
+
+    const dispatch = useDispatch()
+    const [user, setUser] = useState([])
+
     const { navigate } = useNavigationService();
     const token = useSelector((state) => state.authReducer.token);
     console.log('token: ' + token);
+
+    const getProfile = () => {
+        axios.get(`${baseURL}/profiles`, {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        })
+            .then((response) => {
+                console.log('response', response.data)
+                setUser(response.data)
+                dispatch({
+                    type: 'SET_USER',
+                    user: response.data
+                })
+            })
+            .catch((error) => {
+                console.log('error:', error)
+            })
+    }
 
     const generateRandomColor = () => {
         const letters = '0123456789ABCDEF';
@@ -28,10 +52,14 @@ const HomeScreen = () => {
         return color;
     };
     const getAllTopic = () => {
-        axios.get(`${baseURL}/topics`)
+        axios.get(`${baseURL}/topics`, {
+            headers: {
+                'Authorization': 'bearer ' + token,
+            }
+        })
             .then((response) => {
-                console.log('data', response.data)
-                setTopics(response.data)
+                console.log('data', response.data?.topics)
+                setTopics(response.data?.topics)
             })
             .catch((error) => console.error(error))
     }
@@ -49,9 +77,14 @@ const HomeScreen = () => {
         });
         setFetchData(newData);
     }
-    // console.log(newArray);
+    useFocusEffect(
+        useCallback(() => {
+            console.log('focus')
+            getAllTopic()
+        }, [])
+    );
     useEffect(() => {
-        getAllTopic()
+        getProfile()
     }, [])
     useEffect(() => {
         customTopics();
@@ -80,11 +113,10 @@ const HomeScreen = () => {
             >
                 <View style={{ width: '60%', height: '80%', justifyContent: 'space-around', alignItems: 'center' }}>
                     <View style={{ flexDirection: 'row', width: '80%', alignItems: 'center', justifyContent: 'space-around' }}>
-                        <Text style={[styles.text, { fontSize: 14 }]}>{10}/{item?.numberOfGame}</Text>
+                        <Text style={[styles.text, { fontSize: 14 }]}>{item?.numberOfPlayedGames}/{item?.numberOfGame}</Text>
                         <ProgressBar
-                            // progress={item?.gamesPlayed / item?.numberOfGame}
-                            progress={10 / item?.numberOfGame}
-                            width={110}
+                            progress={item?.numberOfPlayedGames / item?.numberOfGame}
+                            width={120}
                             color={'#69b900'}
                             unfilledColor={'#FFFFFF'}
                             borderColor={'#FFFFFF'}

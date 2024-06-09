@@ -2,8 +2,8 @@ import {
     SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity, useColorScheme, ScrollView, KeyboardAvoidingView
 } from 'react-native'
 import React, { useState } from 'react'
-import RadioButtonRN from 'radio-buttons-react-native';
-import { setOS } from '../../styles/styles';
+import moment from 'moment';
+import { useSelector } from 'react-redux';
 
 const ProfileScreen = () => {
     const localStyles = React.useMemo(() =>
@@ -45,6 +45,8 @@ const ProfileScreen = () => {
                 fontSize: 15
             }
         }), [])
+    const user = useSelector((state) => state.authReducer.user);
+    console.log(user);
     const [themeValue, setThemeValue] = useState('');
     const [initialValue, setInitialValue] = useState(0);
     const themes = useColorScheme();

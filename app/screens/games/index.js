@@ -1,7 +1,9 @@
-import { Button, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Button, Image, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import * as Speech from 'expo-speech';
 import { Audio } from 'expo-av';
+import * as Haptics from 'expo-haptics';
+import * as FileSystem from 'expo-file-system';
 import { AreaChart, Grid } from 'react-native-svg-charts';
 import * as shape from 'd3-shape';
 import { Path } from 'react-native-svg'
@@ -9,9 +11,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useRoute } from '@react-navigation/native';
 import axios from 'axios';
 
-import Waveform from '../../components/wave/Waveform';
 import ProgressGame from '../../components/header/ProgressGame';
 import baseURL from '../../services/api/baseURL';
+import useNavigationService from '../../navigation/NavigationService';
+import Loader from '../../components/Load/loader';
 
 
 const handleSpeak = (text) => {
@@ -26,22 +29,42 @@ const handleSpeak = (text) => {
 }
 const GameScreen = () => {
     const answer = useSelector((state) => state.gameReducer.selectAnswers);
+    console.log('answer', answer)
     const rightAnswer = useSelector((state) => state.gameReducer.rightAnswers);
     const token = useSelector((state) => state.authReducer.token);
-    const [games, setGames] = useState([]);
+    const user = useSelector((state) => state.authReducer.user);
     const route = useRoute();
     const id = route.params?.id;
+    console.log(id);
+    const { navigate } = useNavigationService();
+    const [games, setGames] = useState([]);
     const getAllGames = () => {
-        axios.get(`${baseURL}/topics/${id}/games`, {
+        axios.get(`${baseURL}/games?ProfileId=${user?.id}&TopicId=${id}`, {
             headers: {
+                'Accept': 'text/plain',
                 'Authorization': 'bearer ' + token,
             }
         })
             .then((response) => {
-                console.log('response', response.data)
-                setGames(response.data)
+                // console.log('response', response.data?.games)
+                setGames(response.data?.games,)
             })
             .catch((error) => console.log('error', error))
+    }
+    const updateGame = (gameId, isCorrectAnswer) => {
+        console.log('isCorrectAnswer', isCorrectAnswer)
+        formData = {
+            isPlayed: isCorrectAnswer
+        }
+        axios.patch(`${baseURL}/profiles/${user?.id}/games/${gameId}/play`, formData, {
+            headers: {
+                'Accept': 'text/plain',
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json',
+            }
+        }).then((response) => {
+            console.log('response', response.data)
+        }).catch((err) => console.error('errr', err.response))
     }
     useEffect(() => {
         getAllGames();
@@ -189,19 +212,82 @@ const GameScreen = () => {
     const [checkAnswer, setCheckAnswer] = useState(false);
     const [isCorrectAnswer, setCorrectAnswer] = useState(null);
     const [progress, setProgress] = useState()
+    const [loading, setLoading] = useState(false)
+    const [correctSound, setCorrectSound] = useState();
+    const [incorrectSound, setIncorrectSound] = useState();
     const handleNext = () => {
-        // if(currentQuestionIndex === games.length){
-
-        // }
-        setCurrentQuestionIndex(currentQuestionIndex + 1);
-        setProgress((currentQuestionIndex + 1) / games.length)
-        console.log('progress', progress)
+        if (currentQuestionIndex + 1 === newGames.length) {
+            setLoading(true);
+            setTimeout(() => {
+                navigate('CompleteGame', { id: id })
+                setLoading(false);
+            }, 2000);
+        } else {
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
+            setProgress((currentQuestionIndex + 1) / newGames.length)
+            console.log('progress', progress)
+        }
     };
-    console.log('currentQuestionIndex:', currentQuestionIndex)
-    console.log('progress', progress)
-    console.log(games.length)
+    useEffect(() => {
+        const loadSounds = async () => {
+            const correctSound = new Audio.Sound();
+            const incorrectSound = new Audio.Sound();
+
+            await correctSound.loadAsync(require('../../../assets/right-answer.mp3'));
+            await incorrectSound.loadAsync(require('../../../assets/wrong-answer.mp3'));
+
+            setCorrectSound(correctSound);
+            setIncorrectSound(incorrectSound);
+        };
+
+        loadSounds();
+
+        return () => {
+            if (correctSound) {
+                correctSound.unloadAsync();
+            }
+            if (incorrectSound) {
+                incorrectSound.unloadAsync();
+            }
+        };
+    }, []);
+    const handleSound = async (isCorrect) => {
+        if (isCorrect) {
+            if (correctSound) {
+                await correctSound.replayAsync();
+            }
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        } else {
+            if (incorrectSound) {
+                await incorrectSound.replayAsync();
+            }
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
+    }
+    const newGames = games.filter(item => item.isPlayed !== true);
+    // console.log(newGames.length);
+    const questionss = newGames[currentQuestionIndex];
+    const createProfileGame = () => {
+        const formData = {
+            profileId: user?.id,
+            gameId: questionss?.id,
+            isPlayed: false
+        }
+        axios.post(`${baseURL}/profileGames`, formData, {
+            headers: {
+                'Accept': 'text/plain',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        }).then((response) => {
+            console.log(response.data)
+        }).catch((err) => console.error('err', err))
+    }
+    useEffect(() => {
+        createProfileGame();
+    }, [questionss])
     const renderQuestion = () => {
-        const question = games[currentQuestionIndex];
+        const question = newGames[currentQuestionIndex];
         switch (question?.kind) {
             case 'Picture Choice':
                 return <MultipleChoiceQuestion
@@ -241,7 +327,7 @@ const GameScreen = () => {
                 <ProgressGame style={{ paddingHorizontal: 17 }} isIconBack progress={progress} />
             </View>
             {renderQuestion()}
-            <View style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'flex-end', borderWidth: 1 }}>
+            <View style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'flex-end', }}>
                 {checkAnswer && (
                     <View style={{
                         width: '100%', alignItems: 'center', backgroundColor: isCorrectAnswer ? '#f2c601' : '#ff6060',
@@ -277,7 +363,9 @@ const GameScreen = () => {
                                 handleNext();
                             }}
                         >
-                            <Text style={{ color: isCorrectAnswer ? '#f2c601' : '#ff6060', fontSize: 17, fontWeight: '500', }}>Continue</Text>
+                            <Text style={{ color: isCorrectAnswer ? '#f2c601' : '#ff6060', fontSize: 17, fontWeight: '500', }}>
+                                Continue
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 )}
@@ -291,12 +379,15 @@ const GameScreen = () => {
                         onPress={() => {
                             setCheckAnswer(true);
                             setCorrectAnswer(answer === rightAnswer);
+                            updateGame(questionss?.id, answer === rightAnswer)
+                            handleSound(answer === rightAnswer)
                         }}
                     >
                         <Text style={{ color: '#FFFFFF' }}>Check Answer</Text>
                     </TouchableOpacity>
                 )}
             </View>
+            {loading ? <Loader indeterminate={loading} /> : null}
         </SafeAreaView>
     )
 }
@@ -334,10 +425,10 @@ const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
     }
     return (
         <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '90%', height: '70%' }}>
-            <Text style={{ fontSize: 17, fontWeight: '600' }}>{question.question}</Text>
+            <Text style={{ fontSize: 17, fontWeight: '600', textAlign: 'center' }}>{question.question}</Text>
             <TouchableOpacity style={{
                 width: 'auto', flexDirection: 'row', alignItems: 'center',
-                alignSelf: 'flex-start', justifyContent: 'space-between'
+                justifyContent: 'space-between'
             }}
                 onPress={() => handleSpeak(question.rightAnswer)}
             >
@@ -345,12 +436,12 @@ const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
                     source={require('../../../assets/speaker.png')}
                     style={{ width: 25, height: 25, tintColor: '#f2c601' }}
                 />
-                <Text style={{ fontSize: 18, fontWeight: '500', paddingHorizontal: 10 }}>{question.rightAnswer}</Text>
+                {/* <Text style={{ fontSize: 18, fontWeight: '500', paddingHorizontal: 10 }}>{question.rightAnswer}</Text> */}
             </TouchableOpacity>
             {rows.map((row, rowIndex) => (
                 <View key={rowIndex} style={styles.row}>
                     {row.map((option, index) => {
-                        console.log('option', option)
+                        // console.log('option', option)
                         const optionIndex = rowIndex * 2 + index;
                         const isSelected = optionIndex === selectedAnswer;
                         return (
@@ -381,7 +472,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
     const [unselectedWords, setUnselectedWords] = useState([]);
     const dispatch = useDispatch();
 
-    console.log('option:', question.options)
+    // console.log('option:', question.options)
     const words = question.options.map(item => item.name);
     console.log('words:', words)
     useEffect(() => {
@@ -406,7 +497,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
         handleSpeak(word)
         setUnselectedWords(unselectedWords.filter((_, i) => i !== index));
         setSelectedWords([...selectedWords, word]);
-        if (unselectedWords.length === 1) {
+        if (unselectedWords.length >= 0) {
             setSelectedAnswer(unselectedWords.length)
         }
     };
@@ -415,7 +506,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
         const word = selectedWords[index];
         setSelectedWords(selectedWords.filter((_, i) => i !== index));
         setUnselectedWords([...unselectedWords, word]);
-        if (selectedWords.length <= 5) {
+        if (selectedWords.length === 1) {
             setSelectedAnswer(null)
         }
     };
@@ -423,12 +514,14 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
         <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '90%', height: '70%' }}>
             <Text style={{ fontSize: 17, fontWeight: '600', textAlign: 'center' }}>{question.question}</Text>
             <TouchableOpacity style={{
-                width: 'auto', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'
+                width: 'auto', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
             }}
                 onPress={() => handleSpeak(question.rightAnswer)}
             >
                 <Image
                     source={require('../../../assets/speak.png')}
+                    style={{ width: 130, height: 130 }}
+                    resizeMode='contain'
                 />
                 <View style={{ width: 50, backgroundColor: '#f2c601', height: 40, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
                     <Image
@@ -438,7 +531,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
                 </View>
 
             </TouchableOpacity>
-            <View style={{ width: '90%', height: '10%', flexDirection: 'row', borderBottomWidth: 0.2 }}>
+            <View style={{ width: '90%', height: 'auto', flexDirection: 'row', borderBottomWidth: 0.2, flexWrap: 'wrap' }}>
                 {selectedWords.map((word, index) => (
                     <TouchableOpacity key={index}
                         onPress={() => handleDeselectWord(index)}
@@ -448,7 +541,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
                     </TouchableOpacity>
                 ))}
             </View>
-            <View style={{ width: '90%', height: '10%', flexDirection: 'row', borderBottomWidth: 0.2 }}>
+            <View style={{ width: '90%', height: 'auto', flexDirection: 'row', borderBottomWidth: 0.2, flexWrap: 'wrap' }}>
                 {unselectedWords.map((word, index) => (
                     <TouchableOpacity key={index} onPress={() => handleSelectWord(index)} style={styles.wordButton}>
                         <Text style={styles.wordText}>{word}</Text>
@@ -463,8 +556,18 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer }) => {
     const [soundUri, setSoundUri] = useState('');
     const [waveformData, setWaveformData] = useState([]);
     const intervalId = useRef(null);
+    const dispatch = useDispatch();
+    const [sound, setSound] = useState(null);
+    const [text, setText] = useState(null);
 
     const token = useSelector((state) => state.authReducer.token);
+
+    useEffect(() => {
+        dispatch({
+            type: 'RIGHT_ANSWER',
+            rightAnswers: question.rightAnswer
+        })
+    }, [question])
 
     useEffect(() => {
         return () => {
@@ -489,8 +592,30 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer }) => {
                 playsInSilentModeIOS: true,
             });
 
+            const recordingOptions = {
+                isMeteringEnabled: true,
+                android: {
+                    extension: '.3gp',
+                    outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_DEFAULT,
+                    audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_DEFAULT,
+                    sampleRate: 16000,
+                    numberOfChannels: 1,
+                    bitRate: 128000,
+                },
+                ios: {
+                    extension: '.m4a',
+                    audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH,
+                    sampleRate: 16000,
+                    numberOfChannels: 1,
+                    bitRate: 128000,
+                    linearPCMBitDepth: 16,
+                    linearPCMIsBigEndian: false,
+                    linearPCMIsFloat: false,
+                },
+            };
+
             const { recording } = await Audio.Recording.createAsync(
-                Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+                recordingOptions
             );
 
             setRecording(recording);
@@ -508,14 +633,32 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer }) => {
         try {
             if (recording) {
                 await recording.stopAndUnloadAsync();
+                // console.log('recording', recording)
                 const uri = recording.getURI();
+                // const { sound, status } = await recording.createNewLoadedSoundAsync();
+                // console.log('sound:', sound);
+                // console.log('status:', status);
+                // console.log('Recording stopped and stored at:', uri);
                 setSoundUri(uri);
-                console.log('Recording stopped and stored at:', uri);
+
+                // const wavUri = FileSystem.documentDirectory + 'recording.wav';
+                // await FileSystem.copyAsync({ from: uri, to: wavUri });
+                // console.log('Copied recording to:', wavUri);
+
                 setRecording(null);
                 setSelectedAnswer(uri)
+
+                const { sound } = await Audio.Sound.createAsync(
+                    { uri },
+                    { shouldPlay: false }
+                );
+                // const urii = sound.source.uri;
+                // console.log('uri', urii)
+                setSound(sound);
+
                 if (intervalId.current) {
                     clearInterval(intervalId.current);
-                    console.log('Interval cleared with id:', intervalId.current);
+                    // console.log('Interval cleared with id:', intervalId.current);
                     intervalId.current = null;
                 }
             }
@@ -526,21 +669,78 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer }) => {
     const updateWaveformData = () => {
         const data = Array.from({ length: 40 }, () => Math.random() * 10 - 5);
         setWaveformData(data);
-        console.log('Updated waveformData:', data);
+        // console.log('Updated waveformData:', data);
     };
 
-    // api
-    const getTextFromSpeech = () => {
-        axios.get(`${baseURL}/games/${question?.id}/upload/voice`, soundUri, {
+    const playSound = async () => {
+        if (sound) {
+            try {
+                await sound.replayAsync();
+            } catch (err) {
+                console.error('Failed to play the sound', err);
+            }
+        } else {
+            console.log('No sound to play');
+        }
+    };
+    useEffect(() => {
+        if (soundUri) {
+            UploadAudio();
+        }
+    }, [soundUri])
+    console.log('question?.id', question?.id)
+
+    const UploadAudio = () => {
+        const formData = new FormData();
+        const audioFile = {
+            uri: soundUri,
+            name: Platform.OS === 'ios' ? 'recording.m4a' : 'recording.3gp',
+            type: Platform.OS === 'ios' ? 'audio/x-m4a' : 'audio/3gp',
+        };
+        formData.append('audioFile', audioFile);
+        axios.post(`${baseURL}/games/${question?.id}/upload/voice`, formData, {
             headers: {
-                'Content-Type': 'multipart/form-data',
-                'Authorization': 'Bearer ' + token
+                // 'Accept': '*/*',
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'multipart/form-data'
             }
         })
             .then((response) => {
-                console.log(response.data)
+                console.log(response.data?.mediaLink)
+                getText(response.data?.mediaLink)
                 // setSelectedAnswer()
+            }).catch((error) => {
+                console.error(error.response?.data)
             })
+    }
+    const getText = (uri) => {
+        formData = {
+            wavFileGcsUri: uri
+        }
+        axios.post(`${baseURL}/games/voice/translateToText`, formData, {
+            headers: {
+                'Accept': 'text/plain',
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            console.log('data', response.data?.text)
+            setText(response.data?.text)
+            // selectAnswers(response.data?.text)
+        }).catch((err) => {
+            console.log('errorr', err)
+        })
+    }
+    useEffect(() => {
+        if (text) {
+            selectAnswers(text)
+        }
+    }, [text])
+    const selectAnswers = (answer) => {
+        dispatch({
+            type: 'SELECT_ANSWER',
+            selectAnswers: answer
+        })
     }
     const Line = ({ line }) => (
         <Path
@@ -592,6 +792,9 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer }) => {
                     <Line />
                 </AreaChart>
             )}
+            {/* <Button style={styles.button} onPress={() => sound.replayAsync()} title="Play"></Button> */}
+            {/* <Button title="Play Sound" onPress={playSound} disabled={!sound} /> */}
+            {text && <Text style={[styles.wordText, { textAlign: 'center' }]}>You said: {text}</Text>}
         </View>
     );
 };
@@ -614,13 +817,13 @@ const SentenceChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
         selectAnswers(text);
         setSelectedAnswer(index);
     }
-    console.log('question.options', question.options)
+    // console.log('question.options', question.options)
     return (
         <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '90%', height: '70%' }}>
-            <Text style={{ fontSize: 17, fontWeight: '600', textAlign: 'center' }}>{question.question}</Text>
+            <Text style={{ fontSize: 17, fontWeight: '600', textAlign: 'center', width: '80%' }}>{question.question}</Text>
             <TouchableOpacity style={{
                 width: 'auto', flexDirection: 'row', alignItems: 'center',
-                alignSelf: 'flex-start', justifyContent: 'space-between'
+                justifyContent: 'space-between'
             }}
                 onPress={() => handleSpeak(question.rightAnswer)}
             >
@@ -628,7 +831,7 @@ const SentenceChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
                     source={require('../../../assets/speaker.png')}
                     style={{ width: 25, height: 25, tintColor: '#f2c601' }}
                 />
-                <Text style={{ fontSize: 18, fontWeight: '500', paddingHorizontal: 10 }}>{question.rightAnswer}</Text>
+                {/* <Text style={{ fontSize: 18, fontWeight: '500', paddingHorizontal: 10 }}>{question.rightAnswer}</Text> */}
             </TouchableOpacity>
             {question.options.map((option, index) => (
                 <TouchableOpacity key={index} style={[styles.optionRow,
@@ -655,6 +858,7 @@ const styles = StyleSheet.create({
         fontSize: 17,
         fontWeight: '500',
         textAlign: 'center',
+        width: '95%'
     },
     option: {
         alignItems: 'center',

@@ -1,4 +1,4 @@
-import { SafeAreaView, StyleSheet, Text, View, Image, TextInput, Platform, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
+import { SafeAreaView, StyleSheet, Text, View, Image, TextInput, Platform, TouchableOpacity, KeyboardAvoidingView, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -82,7 +82,12 @@ const RegisterScreen = () => {
                 }
             })
             .catch((error) => {
-                console.log('error:', error)
+                // console.log('error:', error)
+                if (error.response) {
+                    // console.log('error:', error.response);
+                    const errorMessages = error.response?.data.map(item => item.description).join('\n');
+                    Alert.alert('Notification', errorMessages)
+                }
                 setProgress(false)
             })
     }

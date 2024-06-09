@@ -81,7 +81,12 @@ const LoginScreen = () => {
             userName: username,
             password: password
         }
-        axios.post(`${baseURL}/users/signIn`, data)
+        axios.post(`${baseURL}/users/signIn`, data, {
+            headers: {
+                'Content-Type': 'application/json',
+                'accept': 'text/plain'
+            }
+        })
             .then((response) => {
                 console.log('response', response?.data)
                 console.log('response', response?.status)
@@ -93,13 +98,13 @@ const LoginScreen = () => {
                     setToken(response?.data?.token)
                     navigate('BottomTabs', {})
                     setProgress(false)
-                } else if (response?.status === 401) {
-                    Alert.alert('Incorrect login information, Please try again!')
-                    setProgress(false)
                 }
             })
             .catch((error) => {
-                console.log('error:', error);
+                if (error.response) {
+                    console.log('error:', error.response?.data);
+                    Alert.alert('Notification', error.response?.data?.message)
+                }
                 setProgress(false)
             })
     }
