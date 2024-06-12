@@ -88,14 +88,18 @@ const LoginScreen = () => {
             }
         })
             .then((response) => {
-                console.log('response', response?.data)
-                console.log('response', response?.status)
-                console.log('response', response)
+                // console.log('response', response?.status)
+                // console.log('response', response)
                 if (response?.status === 200) {
                     setRes(response?.data)
                     console.log('response', response.data?.token)
                     AsyncStorage.setItem('token', response?.data?.token)
                     setToken(response?.data?.token)
+                    console.log('response', response?.data)
+                    dispatch({
+                        type: 'SET_ACCOUNT',
+                        account: response?.data
+                    })
                     navigate('BottomTabs', {})
                     setProgress(false)
                 }

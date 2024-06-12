@@ -1,6 +1,7 @@
 const initState = {
     token: '',
-    user: []
+    user: [],
+    account: []
 }
 
 const AuthReducer = (state = initState, payload) => {
@@ -14,6 +15,11 @@ const AuthReducer = (state = initState, payload) => {
             return {
                 ...state,
                 user: payload.user,
+            }
+        case 'SET_ACCOUNT':
+            return {
+                ...state,
+                account: payload.account,
             }
         default:
             return state;
