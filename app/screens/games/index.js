@@ -17,16 +17,6 @@ import useNavigationService from '../../navigation/NavigationService';
 import Loader from '../../components/Load/loader';
 
 
-const handleSpeak = (text) => {
-    Speech.speak(text,
-        options = {
-            voice: "com.apple.speech.synthesis.voice.Fred",
-            // language: 'en-US',
-            pitch: 1,
-            rate: 1
-        }
-    )
-}
 const GameScreen = () => {
     const answer = useSelector((state) => state.gameReducer.selectAnswers);
     console.log('answer', answer)
@@ -71,142 +61,6 @@ const GameScreen = () => {
     }, [])
     // console.log(rightAnswer)
     // console.log(answer)
-    const game = [
-        {
-            id: 1,
-            kind: 'Picture Choice', question: 'What is the capital of France?',
-            options: [
-                { title: 'Dog', img: 'https://i.pinimg.com/736x/f6/7d/0e/f67d0eda913232d983e24d2ad4440d96.jpg' },
-                { title: 'Cat', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTw7WgnvCYg4a6RNT6H5hkwnAIXXFP40zWlCQ&s' },
-                { title: 'Rabbit', img: 'https://img.freepik.com/free-vector/cute-rabbit-bite-carrot-cartoon-vector-icon-illustration-animal-nature-icon-concept-isolated-flat_138676-7366.jpg' },
-                { title: 'Bear', img: 'https://img.freepik.com/premium-vector/cute-cartoon-bear-illustration_490828-617.jpg' }
-            ],
-            rightAnswer: 'Dog'
-        },
-        { id: 1, kind: 'Sentence Scramble', question: 'Translate this sentence', words: ['drink', 'I', 'water', 'and', 'coffee'], rightAnswer: 'I drink coffee and water' },
-        {
-            id: 1,
-            kind: 'Sentence Choice', question: 'The dog is brown.',
-            options: [
-                { title: 'The dog is brown.' },
-                { title: 'The dog is black and white.' },
-                { title: 'The dog is a farm animal.' },
-                { title: 'The dog is the largest land animal.' }
-            ],
-            rightAnswer: 'The dog is brown.'
-        },
-        { id: 1, kind: 'Echo Repeat', question: 'Pronounce the word "Bonjour"', rightAnswer: 'I drink coffee and water' },
-    ];
-    const questions = [
-        {
-            id: "08dc813c-26a4-4fa5-8674-ba6081caa464",
-            kind: "Picture Choice",
-            question: "Which animal says meow?",
-            rightAnswer: "Cat",
-            soundFilePath: null,
-            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
-            options: []
-        },
-        {
-            id: "08dc813c-26b0-43f1-826e-3ed82271e247",
-            kind: "Picture Choice",
-            question: "Which animal is known for its long neck?",
-            rightAnswer: "Giraffe",
-            soundFilePath: null,
-            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
-            options: []
-        },
-        {
-            id: "08dc813c-26b0-44bb-8746-f84d9f5f5653",
-            kind: "Picture Choice",
-            question: "Which animal lives in the water and has fins?",
-            rightAnswer: "Fish",
-            soundFilePath: null,
-            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
-            options: []
-        },
-        {
-            id: "08dc813c-26b0-44f3-89f9-33c86aa9b7ab",
-            kind: "Sentence Scramble",
-            question: null,
-            rightAnswer: "The cat sat on the mat.",
-            soundFilePath: null,
-            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
-            options: []
-        },
-        {
-            id: "08dc813c-26b0-4510-8ded-fbb4d2613e78",
-            kind: "Sentence Choice",
-            question: null,
-            rightAnswer: "The dog is brown.",
-            soundFilePath: null,
-            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
-            options: []
-        },
-        {
-            id: "08dc813c-26b0-452e-8228-9da34b22befa",
-            kind: "Echo Repeat",
-            question: null,
-            rightAnswer: "The cow says moo.",
-            soundFilePath: null,
-            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
-            options: []
-        },
-        {
-            id: "08dc813c-26b0-4542-84c1-3b138d2af0ca",
-            kind: "Sentence Scramble",
-            question: null,
-            rightAnswer: "The horse is a mammal.",
-            soundFilePath: null,
-            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
-            options: []
-        },
-        {
-            id: "08dc813c-26b0-4556-8a22-cdf8be607442",
-            kind: "Sentence Choice",
-            question: null,
-            rightAnswer: "The pig is a farm animal.",
-            soundFilePath: null,
-            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
-            options: []
-        },
-        {
-            id: "08dc813c-26b0-456e-8c5c-0d4864b79191",
-            kind: "Echo Repeat",
-            question: null,
-            rightAnswer: "The sheep says baa.",
-            soundFilePath: null,
-            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
-            options: []
-        },
-        {
-            id: "08dc813c-26b0-4582-8330-70d6f437298a",
-            kind: "Sentence Scramble",
-            question: null,
-            rightAnswer: "The lion is the king of the jungle.",
-            soundFilePath: null,
-            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
-            options: []
-        },
-        {
-            id: "08dc813c-26b0-45a8-81da-dfa89985c4c7",
-            kind: "Sentence Choice",
-            question: null,
-            rightAnswer: "The elephant is the largest land animal.",
-            soundFilePath: null,
-            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
-            options: []
-        },
-        {
-            id: "08dc813c-26b0-45db-8c44-8838314f44f7",
-            kind: "Echo Repeat",
-            question: null,
-            rightAnswer: "The monkey says ooh ooh aa aa.",
-            soundFilePath: null,
-            topicId: "26a0c9d0-1534-11ef-8731-02509b688cae",
-            options: []
-        }
-    ]
     const [selectedAnswer, setSelectedAnswer] = useState(null)
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [checkAnswer, setCheckAnswer] = useState(false);
@@ -215,6 +69,7 @@ const GameScreen = () => {
     const [loading, setLoading] = useState(false)
     const [correctSound, setCorrectSound] = useState();
     const [incorrectSound, setIncorrectSound] = useState();
+    const [sound, setSound] = useState(null);
     const handleNext = () => {
         if (currentQuestionIndex + 1 === newGames.length) {
             setLoading(true);
@@ -264,6 +119,56 @@ const GameScreen = () => {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         }
     }
+    const saveBase64Audio = async (base64String, fileName) => {
+        const fileUri = FileSystem.documentDirectory + fileName;
+        await FileSystem.writeAsStringAsync(fileUri, base64String, {
+            encoding: FileSystem.EncodingType.Base64,
+        });
+        return fileUri;
+    };
+
+    const generateVoice = async (text) => {
+        try {
+            const response = await axios.post(`${baseURL}/games/synthesizeSpeech?Text=${text}`, {}, {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Accept': 'text/plain'
+                }
+            });
+
+            const base64Audio = response.data?.fileContents;
+            if (base64Audio) {
+                const fileUri = await saveBase64Audio(base64Audio, 'audio.mp3');
+                return fileUri;
+            } else {
+                throw new Error('No audio data received');
+            }
+        } catch (error) {
+            console.log('Error generating voice:', error);
+        }
+    };
+    useEffect(() => {
+        return () => {
+            if (sound) {
+                sound.unloadAsync();
+            }
+        };
+    }, [sound]);
+    const playSound = async (fileUri) => {
+        try {
+            const { sound } = await Audio.Sound.createAsync({ uri: fileUri });
+            setSound(sound);
+            await sound.playAsync();
+        } catch (error) {
+            console.error('Error playing sound:', error);
+        }
+    };
+    const handlePress = async (text) => {
+        const fileUri = await generateVoice(text);
+        if (fileUri) {
+            await playSound(fileUri);
+        }
+    };
     const newGames = games.filter(item => item.isPlayed !== true);
     // console.log(newGames.length);
     const questionss = newGames[currentQuestionIndex];
@@ -296,6 +201,7 @@ const GameScreen = () => {
                     setSelectedAnswer={setSelectedAnswer}
                     selectedAnswer={selectedAnswer}
                     checkAnswer={checkAnswer}
+                    handlePress={handlePress}
                 />;
             case 'Sentence Scramble':
                 return <WordOrderQuestion
@@ -303,6 +209,7 @@ const GameScreen = () => {
                     setSelectedAnswer={setSelectedAnswer}
                     selectedAnswer={selectedAnswer}
                     checkAnswer={checkAnswer}
+                    handlePress={handlePress}
                 />;
             case 'Sentence Choice':
                 return <SentenceChoiceQuestion
@@ -311,11 +218,13 @@ const GameScreen = () => {
                     setSelectedAnswer={setSelectedAnswer}
                     selectedAnswer={selectedAnswer}
                     checkAnswer={checkAnswer}
+                    handlePress={handlePress}
                 />;
             case 'Echo Repeat':
                 return <PronunciationQuestion
                     question={question}
                     setSelectedAnswer={setSelectedAnswer}
+                    handlePress={handlePress}
                 />;
             default:
                 return null;
@@ -396,7 +305,7 @@ const listAllVoiceOptions = async () => {
     console.log(voices);
 };
 
-const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedAnswer, checkAnswer }) => {
+const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedAnswer, checkAnswer, handlePress }) => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch({
@@ -419,7 +328,7 @@ const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
     };
     const rows = chunk(question.options, 2);
     const handleSelect = (text, index) => {
-        handleSpeak(text);
+        handlePress(text)
         selectAnswers(text);
         setSelectedAnswer(index);
     }
@@ -430,7 +339,7 @@ const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
                 width: 'auto', flexDirection: 'row', alignItems: 'center',
                 justifyContent: 'space-between'
             }}
-                onPress={() => handleSpeak(question.rightAnswer)}
+                onPress={() => handlePress(question.rightAnswer)}
             >
                 <Image
                     source={require('../../../assets/speaker.png')}
@@ -452,7 +361,7 @@ const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
                                 disabled={checkAnswer}
                             >
                                 <Image
-                                    source={{ uri: option.img }}
+                                    source={{ uri: option?.photoFilePath }}
                                     style={styles.image}
                                 />
                                 <Text style={styles.optionText}>{option.name}</Text>
@@ -467,7 +376,7 @@ const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
 const shuffleArray = (array) => {
     return array.sort(() => Math.random() - 0.5);
 };
-const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, checkAnswer }) => {
+const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, checkAnswer, handlePress }) => {
     const [selectedWords, setSelectedWords] = useState([]);
     const [unselectedWords, setUnselectedWords] = useState([]);
     const dispatch = useDispatch();
@@ -494,7 +403,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
     }, [selectedWords])
     const handleSelectWord = (index) => {
         const word = unselectedWords[index];
-        handleSpeak(word)
+        handlePress(word)
         setUnselectedWords(unselectedWords.filter((_, i) => i !== index));
         setSelectedWords([...selectedWords, word]);
         if (unselectedWords.length >= 0) {
@@ -516,7 +425,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
             <TouchableOpacity style={{
                 width: 'auto', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
             }}
-                onPress={() => handleSpeak(question.rightAnswer)}
+                onPress={() => handlePress(question.rightAnswer)}
             >
                 <Image
                     source={require('../../../assets/speak.png')}
@@ -551,7 +460,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
         </View>
     );
 };
-const PronunciationQuestion = ({ question, onNext, setSelectedAnswer }) => {
+const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, handlePress }) => {
     const [recording, setRecording] = useState();
     const [soundUri, setSoundUri] = useState('');
     const [waveformData, setWaveformData] = useState([]);
@@ -755,7 +664,7 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer }) => {
             <Text style={{ fontSize: 17, fontWeight: '600' }}>{question.question}</Text>
             {/* Add logic to handle pronunciation */}
             <TouchableOpacity style={{ alignItems: 'center' }}
-                onPress={() => handleSpeak(question.rightAnswer)}
+                onPress={() => handlePress(question.rightAnswer)}
             >
                 <View style={{ borderWidth: 1, padding: 10, borderRadius: 10, borderColor: '#f2c601' }}>
                     <Text style={{ fontSize: 16, fontWeight: '500', color: '#f2c601' }}>{question.rightAnswer}</Text>
@@ -798,7 +707,7 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer }) => {
         </View>
     );
 };
-const SentenceChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedAnswer, checkAnswer }) => {
+const SentenceChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedAnswer, checkAnswer, handlePress }) => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch({
@@ -813,7 +722,7 @@ const SentenceChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
         })
     }
     const handleSelect = (text, index) => {
-        handleSpeak(text);
+        handlePress(text)
         selectAnswers(text);
         setSelectedAnswer(index);
     }
@@ -825,7 +734,7 @@ const SentenceChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
                 width: 'auto', flexDirection: 'row', alignItems: 'center',
                 justifyContent: 'space-between'
             }}
-                onPress={() => handleSpeak(question.rightAnswer)}
+                onPress={() => handlePress(question.rightAnswer)}
             >
                 <Image
                     source={require('../../../assets/speaker.png')}
