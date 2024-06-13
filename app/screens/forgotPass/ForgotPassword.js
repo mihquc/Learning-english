@@ -1,11 +1,38 @@
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import useNavigationService from '../../navigation/NavigationService'
 
+import Loader from '../../components/Load/loader'
+
+import axios from 'axios'
+
 const ForgotPassword = () => {
     const [email, setEmail] = useState('')
+    const [isEmailValid, setIsEmailValid] = useState(false);
+    const [messageValid, setMessageValid] = useState('')
+    const [loading, setLoading] = useState(false)
     const { navigate, goBack } = useNavigationService()
+    useEffect(() => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        setIsEmailValid(emailRegex.test(email));
+    }, [email]);
+    const handleForgotPassword = () => {
+        axios.post(`${baseURL}/users/forgotPassword`, {
+            email: email
+        }).then(res => {
+            console.log(res.data)
+            if (res.data?.success) {
+                navigate('ResetPassword', { email })
+                setLoading(false);
+            }
+        }).catch(err => {
+            console.log(err.response?.data)
+            setMessageValid("Email is not registered")
+            setLoading(false);
+        })
+    }
+
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -31,14 +58,22 @@ const ForgotPassword = () => {
                         value={email}
                         keyboardType="email-address"
                         autoCapitalize="none"
-                        onChangeText={(text) => setEmail(text)}
+                        onChangeText={(text) => {
+                            setEmail(text)
+                            setMessageValid('')
+                        }}
                         autoCorrect={false}
                     />
                 </View>
+                {messageValid &&
+                    <View style={styles.viewValid}>
+                        <Text style={styles.textValid}>{messageValid}</Text>
+                    </View>
+                }
                 <View style={{ width: '100%', alignItems: 'center', height: '20%', justifyContent: 'flex-end' }}>
                     <TouchableOpacity style={[styles.buttonBottom,
                     {
-                        backgroundColor: '#f2c601',
+                        backgroundColor: isEmailValid ? '#f2c601' : 'darkgray',
                         shadowOffset: {
                             width: 0,
                             height: 5,
@@ -48,13 +83,18 @@ const ForgotPassword = () => {
                         shadowRadius: 3.5,
                         elevation: 3
                     }]}
-                        onPress={() => navigate('ResetPassword', {})}
+                        onPress={() => {
+                            setLoading(true)
+                            handleForgotPassword()
+                        }}
+                        disabled={!isEmailValid}
                     >
                         <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}>
                             Send Code
                         </Text>
                     </TouchableOpacity>
                 </View>
+                {loading && <Loader indeterminate={loading} />}
             </KeyboardAwareScrollView>
         </KeyboardAvoidingView>
     )
@@ -92,5 +132,16 @@ const styles = StyleSheet.create({
     input: {
         width: '80%',
         height: '100%',
+    },
+    textValid: {
+        color: 'red',
+        // textAlign: 'center',
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    viewValid: {
+        width: '85%',
+        height: '3%',
+        justifyContent: 'center',
     },
 })
