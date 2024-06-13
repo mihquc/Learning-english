@@ -98,7 +98,7 @@ const BottomTabs = () => {
                     },
                 }}
             />
-            <Tab.Screen
+            {/* <Tab.Screen
                 name={'PronounceScreen'}
                 component={Pronounce}
                 options={{
@@ -125,7 +125,7 @@ const BottomTabs = () => {
                         );
                     },
                 }}
-            />
+            /> */}
             <Tab.Screen
                 name={'ProfileScreen'}
                 component={ProfileNavigator}

@@ -3,12 +3,14 @@ import {
     StatusBar,
     Alert
 } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Svg, { Line, G, Text as SvgText, Path } from 'react-native-svg';
 import * as d3Scale from 'd3-scale';
 import * as ImagePicker from 'expo-image-picker';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
+import baseURL from '../../services/api/baseURL';
 
 const ProfileScreen = () => {
     const localStyles = React.useMemo(() =>
@@ -52,6 +54,7 @@ const ProfileScreen = () => {
         }), [])
     const user = useSelector((state) => state.authReducer.user);
     const account = useSelector((state) => state.authReducer.account);
+    const token = useSelector((state) => state.authReducer.token);
     console.log('user', user);
     console.log('account', account);
     const data = [
@@ -61,6 +64,23 @@ const ProfileScreen = () => {
         { date: '2024-06-08', count: 6 },
         { date: '2024-06-07', count: 4 },
     ]
+
+    const getStaticsDay = () => {
+        axios.get(`${baseURL}/profiles/${user?.id}/statistics/day`, {}, {
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Accept': 'text/plain'
+            }
+        }).then((response) => {
+            console.log('response', response.data)
+        }).catch(error => {
+            console.log('error', error)
+        })
+    }
+    // useEffect(() => {
+    //     getStaticsDay()
+    // }, [])
+
     const screenWidth = Dimensions.get('window').width;
     const chartWidth = screenWidth * 0.9;
     const chartHeight = 250;

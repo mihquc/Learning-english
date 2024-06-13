@@ -1,11 +1,59 @@
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import useNavigationService from '../../navigation/NavigationService';
+import axios from 'axios';
+import baseURL from '../../services/api/baseURL';
+import { useRoute } from '@react-navigation/native';
 
 const ResetPassword = () => {
-    const [code, setCode] = useState('');
+    const route = useRoute();
+    const email = route.params?.email;
+    console.log(email);
     const { navigate } = useNavigationService()
+    const [otp, setOtp] = useState(new Array(6).fill(''));
+    const inputs = useRef([]);
+
+    const handleChange = (text, index) => {
+        const newOtp = [...otp];
+        newOtp[index] = text;
+        setOtp(newOtp);
+
+        if (text.length === 1 && index < 5) {
+            inputs.current[index + 1].focus();
+        }
+    };
+
+    const handleKeyPress = (e, index) => {
+        if (e.nativeEvent.key === 'Backspace' && index > 0 && otp[index] === '') {
+            inputs.current[index - 1].focus();
+        }
+    };
+
+    const otpString = otp.join('');
+    console.log(otpString);
+    const isOtpComplete = otpString.length === 6;
+
+    const handleSubmit = () => {
+        const formData = {
+            email: email,
+            otp: otpString
+        }
+        axios.post(`${baseURL}/users/verifyOtp`, formData, {
+            headers: {
+                'Accept': 'text/plain',
+                'Content-Type': 'application/json'
+            }
+        })
+            .then((response) => {
+                console.log('response', response.data);
+                if (response.data.success === true) {
+                    navigate('NewPassword', { email: email })
+                }
+            }).catch((err) => {
+                console.log('err', err);
+            });
+    };
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -21,18 +69,18 @@ const ResetPassword = () => {
                     </Text>
                 </View>
                 <View style={styles.viewInput}>
-                    <Image
-                        source={require('../../../assets/mail.png')}
-                        style={{ width: 25, height: 25, tintColor: 'gray' }}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Email"
-                        placeholderTextColor="#000"
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                    />
+                    {otp.map((value, index) => (
+                        <TextInput
+                            key={index}
+                            value={value}
+                            onChangeText={text => handleChange(text, index)}
+                            onKeyPress={e => handleKeyPress(e, index)}
+                            style={styles.input}
+                            keyboardType="numeric"
+                            maxLength={1}
+                            ref={ref => (inputs.current[index] = ref)}
+                        />
+                    ))}
                 </View>
                 <View style={{ width: '100%', alignItems: 'center', height: '20%', justifyContent: 'flex-end' }}>
                     <TouchableOpacity style={[styles.buttonBottom,
@@ -47,7 +95,8 @@ const ResetPassword = () => {
                         shadowRadius: 3.5,
                         elevation: 3
                     }]}
-                        onPress={() => navigate('NewPassword', {})}
+                        onPress={() => { handleSubmit() }}
+                        disabled={!isOtpComplete}
                     >
                         <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}>
                             Confirm
@@ -89,7 +138,13 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     input: {
-        width: '80%',
-        height: '100%',
+        width: 40,
+        height: 40,
+        borderWidth: 1,
+        borderColor: '#000',
+        textAlign: 'center',
+        margin: 5,
+        fontSize: 18,
+        borderRadius: 5
     },
 })

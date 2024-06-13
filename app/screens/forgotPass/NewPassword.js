@@ -2,10 +2,36 @@ import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, KeyboardAvo
 import React, { useState } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import useNavigationService from '../../navigation/NavigationService'
+import axios from 'axios'
+import baseURL from '../../services/api/baseURL'
+import { useRoute } from '@react-navigation/native'
 
 const NewPassword = () => {
-    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [password1, setPassword1] = useState('')
+    const route = useRoute()
+    const email = route.params?.email;
+    console.log(email)
     const { navigate, goBack } = useNavigationService()
+    const newPassword = () => {
+        formData = {
+            email: email,
+            newPassword: password
+        }
+        axios.post(`${baseURL}/users/resetPassword`, formData, {
+            headers: {
+                'Accept': 'text/plain',
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            console.log('response', response.data)
+            if (response.data?.success) {
+                navigate('WelcomeBack')
+            }
+        }).catch((error) => {
+            console.error('error:', error)
+        })
+    }
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -17,7 +43,7 @@ const NewPassword = () => {
                         source={require('../../../assets/newpass.png')}
                     />
                     <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '500' }}>
-                        Enter the email address to get an OTP code to reset your password
+                        Create new password
                     </Text>
                 </View>
                 <View style={styles.viewInput}>
@@ -29,14 +55,13 @@ const NewPassword = () => {
                     <TextInput
                         style={styles.input}
                         placeholder="New password"
-                        value={email}
-                        keyboardType="email-address"
+                        value={password}
                         autoCapitalize="none"
-                        onChangeText={(text) => setEmail(text)}
+                        onChangeText={(text) => setPassword(text)}
                         autoCorrect={false}
                     />
                 </View>
-                <View style={styles.viewInput}>
+                {/* <View style={styles.viewInput}>
                     <Image
                         source={require('../../../assets/lock.png')}
                         style={{ width: 25, height: 25, tintColor: 'gray' }}
@@ -45,12 +70,12 @@ const NewPassword = () => {
                     <TextInput
                         style={styles.input}
                         placeholder="New password"
-                        value={email}
+                        value={password1}
                         autoCapitalize="none"
-                        onChangeText={(text) => setEmail(text)}
+                        onChangeText={(text) => setPassword1(text)}
                         autoCorrect={false}
                     />
-                </View>
+                </View> */}
                 <View style={{ width: '100%', alignItems: 'center', height: '20%', justifyContent: 'flex-end' }}>
                     <TouchableOpacity style={[styles.buttonBottom,
                     {
@@ -64,7 +89,10 @@ const NewPassword = () => {
                         shadowRadius: 3.5,
                         elevation: 3
                     }]}
-                        onPress={() => navigate('WelcomeBack', {})}
+                        onPress={() => {
+                            newPassword()
+                        }}
+                        disabled={password === '' ? true : false}
                     >
                         <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}>
                             Save
