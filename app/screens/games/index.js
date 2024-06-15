@@ -169,8 +169,10 @@ const GameScreen = () => {
             await playSound(fileUri);
         }
     };
+    // console.log('games:', games)
+    // console.log('tsl:', games.length)
     const newGames = games.filter(item => item.isPlayed !== true);
-    // console.log(newGames.length);
+    // console.log('cc:', newGames.length);
     const questionss = newGames[currentQuestionIndex];
     const createProfileGame = () => {
         const formData = {
@@ -222,6 +224,18 @@ const GameScreen = () => {
                 />;
             case 'Echo Repeat':
                 return <PronunciationQuestion
+                    question={question}
+                    setSelectedAnswer={setSelectedAnswer}
+                    handlePress={handlePress}
+                />;
+            case 'Foreign Sentence Scramble':
+                return <ForeignSentenceScramble
+                    question={question}
+                    setSelectedAnswer={setSelectedAnswer}
+                    handlePress={handlePress}
+                />;
+            case 'Fill Blank':
+                return <FillBlank
                     question={question}
                     setSelectedAnswer={setSelectedAnswer}
                     handlePress={handlePress}
@@ -383,7 +397,6 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
 
     // console.log('option:', question.options)
     const words = question.options.map(item => item.name);
-    console.log('words:', words)
     useEffect(() => {
         setUnselectedWords(shuffleArray([...words]));
         dispatch({
@@ -495,7 +508,6 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, handlePres
                 return;
             }
 
-            // Cấu hình audio mode
             await Audio.setAudioModeAsync({
                 allowsRecordingIOS: true,
                 playsInSilentModeIOS: true,
@@ -542,17 +554,8 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, handlePres
         try {
             if (recording) {
                 await recording.stopAndUnloadAsync();
-                // console.log('recording', recording)
                 const uri = recording.getURI();
-                // const { sound, status } = await recording.createNewLoadedSoundAsync();
-                // console.log('sound:', sound);
-                // console.log('status:', status);
-                // console.log('Recording stopped and stored at:', uri);
                 setSoundUri(uri);
-
-                // const wavUri = FileSystem.documentDirectory + 'recording.wav';
-                // await FileSystem.copyAsync({ from: uri, to: wavUri });
-                // console.log('Copied recording to:', wavUri);
 
                 setRecording(null);
                 setSelectedAnswer(uri)
@@ -578,20 +581,8 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, handlePres
     const updateWaveformData = () => {
         const data = Array.from({ length: 40 }, () => Math.random() * 10 - 5);
         setWaveformData(data);
-        // console.log('Updated waveformData:', data);
     };
 
-    const playSound = async () => {
-        if (sound) {
-            try {
-                await sound.replayAsync();
-            } catch (err) {
-                console.error('Failed to play the sound', err);
-            }
-        } else {
-            console.log('No sound to play');
-        }
-    };
     useEffect(() => {
         if (soundUri) {
             UploadAudio();
@@ -609,7 +600,6 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, handlePres
         formData.append('audioFile', audioFile);
         axios.post(`${baseURL}/games/${question?.id}/upload/voice`, formData, {
             headers: {
-                // 'Accept': '*/*',
                 'Authorization': 'Bearer ' + token,
                 'Content-Type': 'multipart/form-data'
             }
@@ -701,9 +691,7 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, handlePres
                     <Line />
                 </AreaChart>
             )}
-            {/* <Button style={styles.button} onPress={() => sound.replayAsync()} title="Play"></Button> */}
-            {/* <Button title="Play Sound" onPress={playSound} disabled={!sound} /> */}
-            {text && <Text style={[styles.wordText, { textAlign: 'center' }]}>You said: {text}</Text>}
+            {text && <Text style={[styles.wordText, { textAlign: 'center', color: 'red' }]}>You said: {text}</Text>}
         </View>
     );
 };
@@ -754,6 +742,212 @@ const SentenceChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
         </View>
     );
 }
+const FillBlank = ({ question, onNext, setSelectedAnswer, handlePress }) => {
+    const parts = question?.rightAnswer.split(' ');
+    const blankPosition = question?.options[0]?.blankPosition - 1;
+    const partMiss = parts[blankPosition];
+    const [selectedWords, setSelectedWords] = useState(Array(parts.length).fill(null));
+    const [unselectedWords, setUnselectedWords] = useState(parts.filter(word => word !== partMiss));
+    const dispatch = useDispatch();
+
+    const words = question.options.map(item => item.name);
+    console.log('words', words)
+    useEffect(() => {
+        setUnselectedWords(shuffleArray([...words]));
+        dispatch({
+            type: 'RIGHT_ANSWER',
+            rightAnswers: question.rightAnswer
+        });
+    }, [question]);
+
+    const selectAnswers = (string) => {
+        dispatch({
+            type: 'SELECT_ANSWER',
+            selectAnswers: string
+        })
+    }
+    useEffect(() => {
+        // Reset state when question changes
+        setSelectedWords(Array(parts.length).fill(null));
+        // setUnselectedWords(parts.filter(word => word !== partMiss));
+    }, [question]);
+    useEffect(() => {
+        const newString = parts.map((word, index) =>
+            index === blankPosition ? (selectedWords[index] || '_________') : word
+        ).join(' ');
+        selectAnswers(newString)
+    }, [selectedWords, question, unselectedWords]);
+
+    // console.log('selectedWords', parts.join(' '))
+    const handleSelectWord = (index) => {
+        const newSelectedWords = [...selectedWords];
+        newSelectedWords[blankPosition] = unselectedWords[index];
+        const newUnselectedWords = unselectedWords.filter((_, i) => i !== index);
+        setSelectedAnswer(index)
+        setSelectedWords(newSelectedWords);
+        setUnselectedWords(newUnselectedWords);
+    };
+
+    const handleDeselectWord = (index) => {
+        if (index === blankPosition && selectedWords[index]) {
+            const newUnselectedWords = [...unselectedWords, selectedWords[index]];
+            const newSelectedWords = [...selectedWords];
+            newSelectedWords[index] = null;
+            setSelectedAnswer(null)
+            setSelectedWords(newSelectedWords);
+            setUnselectedWords(newUnselectedWords);
+        }
+    };
+
+    const hasSelectedWord = selectedWords[blankPosition] !== null;
+
+    return (
+        <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '90%', height: '70%' }}>
+            <View style={{ width: '100%' }}>
+                <Text style={styles.questionText}>{question.question}</Text>
+                <TouchableOpacity style={{
+                    width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+                }}
+                    onPress={() => handlePress(question.rightAnswer)}
+                >
+                    <Image
+                        source={require('../../../assets/speak.png')}
+                        style={{ width: 180, height: 180 }}
+                        resizeMode='contain'
+                    />
+                    <View style={{ width: 50, backgroundColor: '#f2c601', height: 40, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
+                        <Image
+                            source={require('../../../assets/speaker.png')}
+                            style={{ width: 25, height: 25, tintColor: '#ffffff' }}
+                        />
+                    </View>
+                </TouchableOpacity>
+            </View>
+
+            <View style={{ width: '90%', height: 'auto', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' }}>
+                {parts.map((word, index) => (
+                    <TouchableOpacity key={index}
+                        onPress={() => handleDeselectWord(index)}
+                        style={[styles.wordButton, { backgroundColor: index === blankPosition && selectedWords[index] ? '#ff5733' : '#fecacb' }]}
+                    // disabled={checkAnswer}
+                    >
+                        <Text style={[styles.wordText, { color: index === blankPosition && selectedWords[index] ? '#fff' : '#000' }]}>
+                            {index === blankPosition ? (selectedWords[index] || '_________') : word}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
+            <View style={{
+                width: '90%', height: 'auto', flexDirection: 'row', flexWrap: 'wrap',
+                justifyContent: 'space-evenly', borderBottomWidth: 0.2
+            }}>
+                {unselectedWords.map((word, index) => (
+                    <TouchableOpacity key={index} onPress={() => {
+                        handleSelectWord(index)
+                        handlePress(word)
+                    }}
+                        style={[styles.wordButton, { backgroundColor: '#f2c601' }]}
+                        disabled={hasSelectedWord}
+                    >
+                        <Text style={[styles.wordText, { color: 'white' }]}>{word}</Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
+        </View>
+    );
+
+}
+const ForeignSentenceScramble = ({ question, onNext, setSelectedAnswer, handlePress }) => {
+    const [selectedWords, setSelectedWords] = useState([]);
+    const [unselectedWords, setUnselectedWords] = useState([]);
+    const dispatch = useDispatch();
+
+    const words = question.options.map(item => item.name);
+    useEffect(() => {
+        setUnselectedWords(shuffleArray([...words]));
+        dispatch({
+            type: 'RIGHT_ANSWER',
+            rightAnswers: question.rightAnswer
+        })
+    }, [question]);
+    const selectAnswers = () => {
+        const userAnswerString = selectedWords.join(' ');
+        dispatch({
+            type: 'SELECT_ANSWER',
+            selectAnswers: userAnswerString
+        })
+    }
+    useEffect(() => {
+        selectAnswers()
+    }, [selectedWords])
+    const handleSelectWord = (index) => {
+        const word = unselectedWords[index];
+        // handlePress(word)
+        setUnselectedWords(unselectedWords.filter((_, i) => i !== index));
+        setSelectedWords([...selectedWords, word]);
+        if (unselectedWords.length >= 0) {
+            setSelectedAnswer(unselectedWords.length)
+        }
+    };
+
+    const handleDeselectWord = (index) => {
+        const word = selectedWords[index];
+        setSelectedWords(selectedWords.filter((_, i) => i !== index));
+        setUnselectedWords([...unselectedWords, word]);
+        if (selectedWords.length === 1) {
+            setSelectedAnswer(null)
+        }
+    };
+    return (
+        <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '90%', height: '70%' }}>
+            <Text style={{ fontSize: 17, fontWeight: '600', textAlign: 'center' }}>{'Dịch câu này'}</Text>
+            <View>
+                <TouchableOpacity style={{
+                    width: 'auto', flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+                }}
+                    onPress={() => handlePress(question.question)}
+                >
+                    <Image
+                        source={require('../../../assets/speak.png')}
+                        style={{ width: 130, height: 130 }}
+                        resizeMode='contain'
+                    />
+                    <View style={{ width: 50, backgroundColor: '#f2c601', height: 40, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
+                        <Image
+                            source={require('../../../assets/speaker.png')}
+                            style={{ width: 25, height: 25, tintColor: '#ffffff' }}
+                        />
+                    </View>
+                </TouchableOpacity>
+                <Text style={{ fontSize: 20, fontWeight: '600', textAlign: 'center' }}>{question.question}</Text>
+            </View>
+            <View style={{
+                width: '90%', height: 'auto', flexDirection: 'row', borderBottomWidth: 0.2,
+                flexWrap: 'wrap', justifyContent: 'center'
+            }}>
+                {selectedWords.map((word, index) => (
+                    <TouchableOpacity key={index}
+                        onPress={() => handleDeselectWord(index)}
+                        style={styles.wordButton}
+                    // disabled={checkAnswer}
+                    >
+                        <Text style={styles.wordText}>{word}</Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
+            <View style={{
+                width: '90%', height: 'auto', flexDirection: 'row', borderBottomWidth: 0.2,
+                flexWrap: 'wrap', justifyContent: 'center'
+            }}>
+                {unselectedWords.map((word, index) => (
+                    <TouchableOpacity key={index} onPress={() => handleSelectWord(index)} style={styles.wordButton}>
+                        <Text style={styles.wordText}>{word}</Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
+        </View>
+    );
+}
 
 export default GameScreen
 
@@ -786,17 +980,19 @@ const styles = StyleSheet.create({
     image: {
         width: 100,
         height: 100,
-        resizeMode: 'contain'
+        resizeMode: 'contain',
+        borderRadius: 5
     },
     wordButton: {
         margin: 5,
         padding: 10,
-        backgroundColor: '#d3d3d3',
+        backgroundColor: '#f2c601',
         borderRadius: 5,
     },
     wordText: {
         fontSize: 16,
-        fontWeight: '500'
+        fontWeight: '500',
+        color: 'white'
     },
     row1: {
         flexDirection: 'row',
@@ -817,4 +1013,50 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 10,
     },
+    questionText: {
+        fontSize: 17,
+        fontWeight: '600',
+        textAlign: 'center',
+        marginBottom: 20
+    },
+    sentenceText: {
+        fontSize: 16,
+        fontWeight: '500',
+        textAlign: 'center',
+        marginBottom: 20,
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    blankSpace: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: 'gray'
+    },
+    selectedWordContainer: {
+        backgroundColor: '#f2c601',
+        borderRadius: 10,
+        paddingHorizontal: 5,
+        marginHorizontal: 5
+    },
+    selectedWordText: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: '#ffffff'
+    },
+    choicesContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center'
+    },
+    choiceButton: {
+        backgroundColor: '#00CC00',
+        borderRadius: 10,
+        padding: 10,
+        margin: 5
+    },
+    choiceText: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: '#ffffff'
+    }
 })

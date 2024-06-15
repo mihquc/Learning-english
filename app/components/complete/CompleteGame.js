@@ -33,8 +33,8 @@ const CompleteGame = () => {
     return (
         <View style={styles.container}>
             <View style={styles.viewButton}>
-                <Text style={styles.text}>You have completed the topic {topic?.name}</Text>
-                <Text style={styles.text}>{topic?.numberOfPlayedGames}/{topic?.numberOfGame}</Text>
+                <Text style={styles.text}>Bạn đã hoàn thành chủ đề {topic?.name}</Text>
+                <Text style={styles.text}>{topic?.numberOfPlayedGames} / {topic?.numberOfGame}</Text>
                 <Image
                     source={require('../../../assets/complete.png')}
                 />
