@@ -28,7 +28,10 @@ const GenderScreen = () => {
     }
     const updateProfile = () => {
         const data = {
+            avatarFilePath: user?.avatarFilePath,
+            birthday: user?.birthday,
             sex: selectGender,
+            status: user?.status
         }
         axios.put(`${baseURL}/profiles/${user?.id}`, data,
             {

@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import i18n from '../../i18n';
 import styles from '../../styles/styles';
 import useNavigationService from '../../navigation/NavigationService';
+import { useSelector } from 'react-redux';
 
 
 const HomeBar = ({ ...props }) => {
@@ -45,13 +46,14 @@ const HomeBar = ({ ...props }) => {
       }),
     [],
   );
-
+  const image = useSelector((state) => state.authReducer.image);
+  // console.log(image)
   return (
     <View style={[localStyles.header, props?.backGroundColorHeader]}>
       <View style={{ flexDirection: 'row' }}>
         <Image
           style={localStyles.cardAvatar}
-          source={{ uri: 'https://i.postimg.cc/Bv2nscWb/icon-default-avatar.png' }}
+          source={{ uri: image == ' ' || !image ? 'https://i.postimg.cc/Bv2nscWb/icon-default-avatar.png' : image }}
           resizeMode="cover"
         />
         {/* <View style={{ height: 'auto', justifyContent: 'center' }}>

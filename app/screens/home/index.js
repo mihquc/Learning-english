@@ -58,7 +58,7 @@ const HomeScreen = () => {
             }
         })
             .then((response) => {
-                console.log('data', response.data?.topics)
+                // console.log('data', response.data?.topics)
                 setTopics(response.data?.topics)
             })
             .catch((error) => console.error(error))
@@ -79,7 +79,7 @@ const HomeScreen = () => {
     }
     useFocusEffect(
         useCallback(() => {
-            console.log('focus')
+            // console.log('focus')
             getAllTopic()
         }, [])
     );
@@ -88,7 +88,7 @@ const HomeScreen = () => {
     }, [])
     useEffect(() => {
         customTopics();
-        console.log('fetchData', fetchData)
+        // console.log('fetchData', fetchData)
     }, [topics])
     const renderItemFlastlist = ({ item, index }) => {
         return (

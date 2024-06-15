@@ -73,7 +73,7 @@ const ForgotPassword = () => {
                 <View style={{ width: '100%', alignItems: 'center', height: '20%', justifyContent: 'flex-end' }}>
                     <TouchableOpacity style={[styles.buttonBottom,
                     {
-                        backgroundColor: isEmailValid ? '#f2c601' : 'darkgray',
+                        backgroundColor: isEmailValid ? '#f2c601' : '#BBBBBB',
                         shadowOffset: {
                             width: 0,
                             height: 5,

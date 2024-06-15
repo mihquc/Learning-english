@@ -56,6 +56,7 @@ const LoginScreen = () => {
     const dispatch = useDispatch();
     const [progress, setProgress] = useState(false)
     const [username, setUsername] = useState('')
+    const [email, setEmail] = useState(null)
     const [password, setPassword] = useState('')
     const [hide, setHide] = useState(true)
     const { navigate, goBack, goPop } = useNavigationService();
@@ -79,6 +80,7 @@ const LoginScreen = () => {
     const signIn = async () => {
         const data = {
             userName: username,
+            email: null,
             password: password
         }
         axios.post(`${baseURL}/users/signIn`, data, {
@@ -88,8 +90,8 @@ const LoginScreen = () => {
             }
         })
             .then((response) => {
-                // console.log('response', response?.status)
-                // console.log('response', response)
+                console.log('response', response?.status)
+                console.log('response', response.data)
                 if (response?.status === 200) {
                     setRes(response?.data)
                     console.log('response', response.data?.token)
