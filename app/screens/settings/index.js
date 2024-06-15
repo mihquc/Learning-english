@@ -11,6 +11,7 @@ const Settings = () => {
     const [progress, setProgress] = useState(false)
     const { navigate, goPopToTop, goPop } = useNavigationService();
     const token = useSelector((state) => state.authReducer.token);
+    const account = useSelector((state) => state.authReducer.account);
     console.log('token:' + token);
     const logOut = () => {
         axios.post(`${baseURL}/users/signOut`, {}, {
@@ -43,7 +44,7 @@ const Settings = () => {
             img: require('../../../assets/lock.png'),
             color: '#b8ff97',
             onPress: () => {
-
+                navigate('NewPassword', { email: account?.email, name: false })
             }
         },
         {

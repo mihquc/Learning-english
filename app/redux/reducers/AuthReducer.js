@@ -1,7 +1,8 @@
 const initState = {
     token: '',
     user: [],
-    account: []
+    account: [],
+    image: '',
 }
 
 const AuthReducer = (state = initState, payload) => {
@@ -20,6 +21,11 @@ const AuthReducer = (state = initState, payload) => {
             return {
                 ...state,
                 account: payload.account,
+            }
+        case 'SET_IMAGE':
+            return {
+                ...state,
+                image: payload.image,
             }
         default:
             return state;

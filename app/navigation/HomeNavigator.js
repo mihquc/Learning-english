@@ -8,7 +8,6 @@ import HomeScreen from '../screens/home';
 import HomeBar from '../components/header/HomeBar';
 
 import i18n from '../i18n';
-import { IosDevice } from '../config/devices';
 import Settings from '../screens/settings';
 import BackBar from '../components/BackBar';
 

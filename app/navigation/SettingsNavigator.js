@@ -5,11 +5,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeBar from '../components/header/HomeBar';
 
 import i18n from '../i18n';
-import { IosDevice } from '../config/devices';
 import ProfileScreen from '../screens/profile';
 import Settings from '../screens/settings';
 import BackBar from '../components/BackBar';
 import Info from '../screens/info';
+import NewPassword from '../screens/forgotPass/NewPassword';
 
 
 const Stack = createNativeStackNavigator();
@@ -33,6 +33,16 @@ const SettingsNavigator = () => {
             <Stack.Screen
                 name="Info"
                 component={Info}
+                options={{
+                    animationTypeForReplace,
+                    headerShown: true,
+                    gestureEnabled: false,
+                    header: () => <BackBar isIconBack />
+                }}
+            />
+            <Stack.Screen
+                name="NewPassword"
+                component={NewPassword}
                 options={{
                     animationTypeForReplace,
                     headerShown: true,
