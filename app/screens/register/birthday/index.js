@@ -97,7 +97,7 @@ const BirthdayScreen = () => {
                     }}
                     onPress={() => updateProfile()}
                 >
-                    <Text style={{ fontSize: 18, fontWeight: '500', color: '#FFFFFF' }}>Next</Text>
+                    <Text style={{ fontSize: 18, fontWeight: '500', color: '#FFFFFF' }}>Tiếp tục</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={{
@@ -119,7 +119,7 @@ const BirthdayScreen = () => {
                         // navigate('BirthdayScreen', {})
                     }}
                 >
-                    <Text style={{ fontSize: 18, fontWeight: '500', color: '#f2c601' }}>Skip</Text>
+                    <Text style={{ fontSize: 18, fontWeight: '500', color: '#f2c601' }}>Bỏ qua</Text>
                 </TouchableOpacity>
             </View>
             <Modal
@@ -131,8 +131,10 @@ const BirthdayScreen = () => {
                 }}>
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
-                        <Text style={styles.modalText}>Congratulations!</Text>
-                        <Text style={{ fontSize: 15 }}>You account is ready to use</Text>
+                        <Text style={styles.modalText}>Chúc mừng!</Text>
+                        <Text style={{ fontSize: 15, textAlign: 'center', width: '75%' }}>
+                            Tài khoản của bạn đã sẵn sàng để sử dụng
+                        </Text>
                         <Image
                             source={require('../../../../assets/congra.png')}
                         />
@@ -143,7 +145,7 @@ const BirthdayScreen = () => {
                                 goPopToTop();
                                 navigate('BeginScreen', {})
                             }}>
-                            <Text style={styles.textStyle}>Let's Go</Text>
+                            <Text style={styles.textStyle}>Bắt đầu lại nào!</Text>
                         </Pressable>
                     </View>
                 </View>

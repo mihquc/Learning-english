@@ -146,7 +146,7 @@ const BottomTabs = () => {
                                 </View>
                                 <View style={localStyles.tabStyle}>
                                     <Text style={[localStyles.labelStyle, { color: labelOrIconColor(focused) }]}>
-                                        Account
+                                        Tài khoản
                                     </Text>
                                 </View>
                             </View>

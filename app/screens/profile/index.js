@@ -106,16 +106,13 @@ const ProfileScreen = () => {
     }, [])
 
     const data = [
-        { label: 'Day', value: '1' },
-        { label: 'Month', value: '2' },
+        { label: 'Ngày', value: '1' },
+        { label: 'Tháng', value: '2' },
     ];
     const [value, setValue] = useState('1');
     const chartWidth = screenWidth * 0.9;
     const chartHeight = 250;
     const margin = { top: 20, right: 20, bottom: 30, left: 20 };
-
-    const formattedDayss = dataDay.map(item => moment(item.day).format('DD/MM'));
-    const counts = dataDay.map(item => item.numberOfGames);
 
     const formatDailyData = () => {
         const formattedDays = dataDay.map(item => moment(item.day).format('DD/MM'));
@@ -131,6 +128,13 @@ const ProfileScreen = () => {
     };
     const { formattedDays, counts: dailyCounts } = formatDailyData();
     const { formattedMonths, counts: monthlyCounts } = formatMonthlyData();
+    const today = moment().startOf('day').toISOString();
+
+    const itemToday = dataDay.find(item => moment(item.day).isSame(today, 'day'));
+
+    const numberOfGamesToday = itemToday ? itemToday.numberOfGames : 0;
+
+    const totalNumberOfGamesMonths = dataMonth.reduce((total, item) => total + item.numberOfGames, 0);
 
 
     const LineChart = ({ labels, counts }) => {
@@ -266,10 +270,33 @@ const ProfileScreen = () => {
         }
         if (!result.canceled) {
             setSelectedImage(result.assets[0].uri);
-            storeImage(result.assets[0].uri)
-            updateProfile(result.assets[0].uri)
+            uploadImg(result.assets[0].uri)
         }
     };
+    const uploadImg = (uri) => {
+        const formData = new FormData();
+        const uriParts = uri.split('.');
+        const fileType = uriParts[uriParts.length - 1];
+        const ImageFile = {
+            uri: uri,
+            type: `image/${fileType}`,
+            name: `image.${fileType}`,
+        }
+        formData.append('ImageFile', ImageFile);
+        axios.post(`${baseURL}/profiles/${user?.id}/uploadAvatar`, formData, {
+            headers: {
+                'Accept': 'text/plain',
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'multipart/form-data'
+            }
+        }).then((response) => {
+            console.log('response', response.data?.publicUrl)
+            storeImage(response.data?.publicUrl)
+            updateProfile(response.data?.publicUrl)
+        }).catch((error) => {
+            console.log('error', error)
+        })
+    }
     const updateProfile = (selectedImage) => {
         formData = {
             sex: user?.sex,
@@ -284,15 +311,25 @@ const ProfileScreen = () => {
                 'Content-Type': 'application/json'
             }
         }).then((response) => {
-            console.log('response', response.data)
+            console.log('response1', response.data)
         }).catch((error) => {
             console.log('error', error)
         })
     }
-    const storeImage = (image) => {
+    const storeImage = (uri) => {
+        const userUpdate = {
+            sex: user?.sex,
+            birthday: user?.birthday,
+            status: user?.status,
+            avatarFilePath: uri
+        }
+        dispatch({
+            type: 'SET_USER',
+            user: userUpdate
+        })
         dispatch({
             type: 'SET_IMAGE',
-            image: image
+            image: uri
         })
     }
 
@@ -302,7 +339,7 @@ const ProfileScreen = () => {
                 <View style={{ borderWidth: 2, borderRadius: 12 }}>
                     <Image
                         style={{ width: 100, height: 100, borderRadius: 10 }}
-                        source={{ uri: selectedImage !== null ? selectedImage : (user?.avatarFilePath == ' ' || !user?.avatarFilePath ? 'https://i.postimg.cc/Bv2nscWb/icon-default-avatar.png' : user?.avatarFilePath) }}
+                        source={{ uri: selectedImage !== null ? selectedImage : (!user?.avatarFilePath ? 'https://i.postimg.cc/Bv2nscWb/icon-default-avatar.png' : user?.avatarFilePath) }}
                         resizeMode='cover'
                     />
                     <TouchableOpacity style={{ position: 'absolute', top: 70, left: 88 }}
@@ -322,12 +359,12 @@ const ProfileScreen = () => {
             </View>
             <View style={localStyles.body2}>
                 <View style={localStyles.bodyChild2}>
-                    <Text style={localStyles.textBodyChild2}>123</Text>
-                    <Text style={{ fontWeight: '400', color: 'gray' }}>Followers</Text>
+                    <Text style={localStyles.textBodyChild2}>{totalNumberOfGamesMonths}</Text>
+                    <Text style={{ fontWeight: '400', color: 'gray' }}>Trò chơi trong tháng</Text>
                 </View>
                 <View style={localStyles.bodyChild2}>
-                    <Text style={localStyles.textBodyChild2}>123</Text>
-                    <Text style={{ fontWeight: '400', color: 'gray' }}>Words</Text>
+                    <Text style={localStyles.textBodyChild2}>{numberOfGamesToday}</Text>
+                    <Text style={{ fontWeight: '400', color: 'gray' }}>Trò chơi trong ngày</Text>
                 </View>
             </View>
             <View style={localStyles.body3}>
@@ -339,7 +376,7 @@ const ProfileScreen = () => {
                         tintColor={'white'}
                     />
                     <Text style={{ color: 'white', fontSize: 15 }}>
-                        Edit Profile
+                        Cập nhật thông tin
                     </Text>
                 </TouchableOpacity>
 
@@ -367,14 +404,14 @@ const ProfileScreen = () => {
             >
                 <View style={{
                     flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 5,
-                    height: Platform.OS === 'android' ? '7%' : '10%'
+                    height: Platform.OS === 'android' ? '7%' : '10%', justifyContent: 'center'
                 }}>
                     <Image
                         source={require('../../../assets/statistics.png')}
                         style={{ width: 20, height: 20 }}
                         resizeMode='contain'
                     />
-                    <Text style={{ fontSize: 18, fontWeight: '600' }}>Statistics</Text>
+                    <Text style={{ fontSize: 18, fontWeight: '600' }}>Thống kê</Text>
                 </View>
                 <View style={{
                     alignItems: 'center', width: '100%',
@@ -401,7 +438,6 @@ const ProfileScreen = () => {
                             <TouchableOpacity style={styles.button}
                                 onPress={() => {
                                     uploadImage('gallery');
-                                    updateProfile();
                                 }}
                             >
                                 <Text style={styles.modalText}>
@@ -411,7 +447,6 @@ const ProfileScreen = () => {
                             <TouchableOpacity style={styles.button}
                                 onPress={() => {
                                     uploadImage('camera');
-                                    updateProfile();
                                 }}
                             >
                                 <Text style={styles.modalText}>
@@ -472,7 +507,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     btn: {
-        width: '40%',
+        width: '52%',
         flexDirection: 'row', alignItems: 'center',
         padding: 12, borderRadius: 15, justifyContent: 'space-evenly',
         backgroundColor: '#f2c601'

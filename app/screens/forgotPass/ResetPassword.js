@@ -70,7 +70,7 @@ const ResetPassword = () => {
                         source={require('../../../assets/send.png')}
                     />
                     <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '500' }}>
-                        Enter the email address to get an OTP code to reset your password
+                        Nhập mã OTP được gửi qua địa chỉ email để đặt lại mật khẩu của bạn
                     </Text>
                 </View>
                 <View style={styles.viewInput}>
@@ -107,7 +107,7 @@ const ResetPassword = () => {
                         disabled={!isOtpComplete}
                     >
                         <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}>
-                            Confirm
+                            Xác nhận
                         </Text>
                     </TouchableOpacity>
                 </View>

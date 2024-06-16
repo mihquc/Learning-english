@@ -65,7 +65,7 @@ const NewPassword = () => {
                         source={require('../../../assets/newpass.png')}
                     />
                     <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '500' }}>
-                        Create new password
+                        Tạo mật khẩu mới
                     </Text>
                 </View>
                 <View style={styles.viewInput}>
@@ -73,7 +73,7 @@ const NewPassword = () => {
                         <Image source={require('../../../assets/lock.png')} style={styles.icon} />
                         <TextInput
                             style={styles.input}
-                            placeholder='New password'
+                            placeholder='Mật khẩu mới'
                             secureTextEntry={hide ? true : false}
                             value={password}
                             onChangeText={(text) => setPassword(text)}
@@ -94,7 +94,7 @@ const NewPassword = () => {
                         <Image source={require('../../../assets/lock.png')} style={styles.icon} />
                         <TextInput
                             style={styles.input}
-                            placeholder='Enter a new password'
+                            placeholder='Nhập lại mật khẩu mới'
                             secureTextEntry={hide1 ? true : false}
                             value={password1}
                             onChangeText={(text) => setPassword1(text)}
@@ -112,7 +112,7 @@ const NewPassword = () => {
                 </View>
                 {!isMatchPassword && password1.length > 0 &&
                     <View style={{ width: '85%' }}>
-                        <Text style={{ color: 'red', fontWeight: '500' }}>Password does not match</Text>
+                        <Text style={{ color: 'red', fontWeight: '500' }}>Mật khẩu không trùng khớp!</Text>
                     </View>
                 }
                 <View style={{ width: '100%', alignItems: 'center', height: '20%', justifyContent: 'flex-end' }}>
@@ -135,7 +135,7 @@ const NewPassword = () => {
                         disabled={isValidate && isMatchPassword ? false : true}
                     >
                         <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}>
-                            Save
+                            Lưu thay đổi
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -150,7 +150,7 @@ const NewPassword = () => {
                     <View style={styles.centeredView}>
                         <View style={styles.modalView}>
                             <Text style={{ fontWeight: '600', fontSize: 15 }}>
-                                Update password successfully
+                                Cập nhật mật khẩu thành công!
                             </Text>
                             <TouchableOpacity style={styles.button}
                                 onPress={() => {

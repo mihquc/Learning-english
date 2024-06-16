@@ -105,7 +105,7 @@ const RegisterScreen = () => {
                     <View style={{ alignItems: 'center' }}>
                         <View style={{ borderWidth: 1, padding: 10, borderRadius: 10 }}>
                             <Text style={{ fontSize: 16, fontWeight: '500', color: '#f2c601' }}>
-                                Sign up to create your own account!
+                                Đăng ký để tạo tài khoản của riêng bạn!
                             </Text>
                         </View>
                         <Image
@@ -118,7 +118,7 @@ const RegisterScreen = () => {
                         <Image source={require('../../../assets/icon_person.png')} style={localStyles.icon} />
                         <TextInput
                             style={localStyles.input}
-                            placeholder='User name'
+                            placeholder='Tên tài khoản'
                             keyboardType='default'
                             value={username}
                             onChangeText={handleUserNameChange}
@@ -128,7 +128,7 @@ const RegisterScreen = () => {
                         <Image source={require('../../../assets/mail.png')} style={localStyles.icon} />
                         <TextInput
                             style={localStyles.input}
-                            placeholder='Email'
+                            placeholder='Địa chỉ email'
                             keyboardType='email-address'
                             value={email}
                             onChangeText={handleEmailChange}
@@ -139,7 +139,7 @@ const RegisterScreen = () => {
                             <Image source={require('../../../assets/lock.png')} style={localStyles.icon} />
                             <TextInput
                                 style={localStyles.input}
-                                placeholder='Password'
+                                placeholder='Mật khẩu'
                                 secureTextEntry={hide ? true : false}
                                 value={password}
                                 onChangeText={handlePasswordChange}
@@ -177,17 +177,18 @@ const RegisterScreen = () => {
                         createAccount()
                     }}
                 >
-                    <Text style={{ fontSize: 17, fontWeight: '500', color: isFormValid ? 'black' : 'gray' }}>Sign Up</Text>
+                    <Text style={{ fontSize: 17, fontWeight: '500', color: isFormValid ? 'black' : 'gray' }}>
+                        Đăng ký </Text>
                 </TouchableOpacity>
                 {/* Divider */}
                 <View style={styles.dividerContainer}>
                     <View style={styles.divider} />
-                    <Text style={styles.dividerContent}>OR</Text>
+                    <Text style={styles.dividerContent}>Hoặc</Text>
                     <View style={styles.divider} />
                 </View>
                 <View style={styles.signUpWrapper}>
                     <Text style={{ color: '#f2c601', fontSize: 15, fontWeight: '500' }}>
-                        Already have an account
+                        Đã có tài khoản?
                     </Text>
                     <TouchableOpacity
                         style={{ backgroundColor: '#f2c601', padding: 10, borderRadius: 10 }}
@@ -202,7 +203,7 @@ const RegisterScreen = () => {
                                 fontWeight: '600',
                                 color: 'white'
                             }}>
-                            Sign In
+                            Đăng nhập
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -244,7 +245,7 @@ const styles = StyleSheet.create({
     signUpWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'space-around',
         marginBottom: 12,
         width: '60%',
     }
