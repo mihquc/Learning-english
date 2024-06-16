@@ -32,7 +32,7 @@ const Settings = () => {
     }
     const data = [
         {
-            name: 'Personal Info',
+            name: 'Thông tin cá nhân',
             img: require('../../../assets/icon_person.png'),
             color: '#c4d5ff',
             onPress: () => {
@@ -40,7 +40,7 @@ const Settings = () => {
             }
         },
         {
-            name: 'Change Password',
+            name: 'Thay đổi mật khẩu',
             img: require('../../../assets/lock.png'),
             color: '#b8ff97',
             onPress: () => {
@@ -48,7 +48,7 @@ const Settings = () => {
             }
         },
         {
-            name: 'Log Out',
+            name: 'Đăng xuất',
             img: require('../../../assets/logout.png'),
             color: '#fecacb',
             onPress: async () => {

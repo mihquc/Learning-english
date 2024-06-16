@@ -15,9 +15,11 @@ const BeginScreen = () => {
                 textHeader: {
                     fontSize: 24,
                     fontWeight: '600',
-                    borderWidth: 1,
+                    borderWidth: 2,
                     padding: 12,
                     borderRadius: 5,
+                    borderColor: '#f2c601',
+                    color: '#f2c601'
                 },
                 button: {
                     alignItems: 'center',
@@ -45,11 +47,11 @@ const BeginScreen = () => {
     );
     return (
         <View style={localStyles.container}>
-            <Text style={localStyles.textHeader}>Hello, I'm Lion</Text>
+            <Text style={localStyles.textHeader}>Xin chào, tôi là Lion</Text>
             <Image source={require('../../assets/liongo.png')} resizeMode='contain' />
-            <View style={{ width: '80%', marginVertical: 14 }}>
+            <View style={{ width: '85%', marginVertical: 14 }}>
                 <Text style={[localStyles.textBody, { textAlign: 'center' }]}>
-                    Learn English whenever and wherever you want. It's free forever.
+                    Học tiếng Anh bất cứ khi nào và bất cứ nơi đâu bạn muốn. Hoàn toàn miễn phí.
                 </Text>
             </View>
             <View style={localStyles.containerBtn}>
@@ -66,14 +68,14 @@ const BeginScreen = () => {
                     onPress={() => navigate('LoginScreen', {})}
                 >
                     <Text style={[localStyles.textButton, { color: '#ffffff' }]}>
-                        Sign In
+                        Đăng nhập
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[localStyles.button, { borderColor: '#f2c601' }]}
                     onPress={() => navigate('RegisterScreen', {})}
                 >
                     <Text style={[localStyles.textButton, { color: '#f2c601' }]}>
-                        Sign Up
+                        Đăng ký
                     </Text>
                 </TouchableOpacity>
             </View>

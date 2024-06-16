@@ -44,7 +44,7 @@ const ForgotPassword = () => {
                         source={require('../../../assets/forgot.png')}
                     />
                     <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '500' }}>
-                        Enter the email address to get an OTP code to reset your password
+                        Nhập địa chỉ email để nhận mã OTP để đặt lại mật khẩu của bạn
                     </Text>
                 </View>
                 <View style={styles.viewInput}>
@@ -54,7 +54,7 @@ const ForgotPassword = () => {
                     />
                     <TextInput
                         style={styles.input}
-                        placeholder="Email"
+                        placeholder="Địa chỉ email"
                         value={email}
                         keyboardType="email-address"
                         autoCapitalize="none"
@@ -67,7 +67,7 @@ const ForgotPassword = () => {
                 </View>
                 {messageValid &&
                     <View style={styles.viewValid}>
-                        <Text style={styles.textValid}>{messageValid}</Text>
+                        <Text style={styles.textValid}>{'Email chưa được đăng ký'}</Text>
                     </View>
                 }
                 <View style={{ width: '100%', alignItems: 'center', height: '20%', justifyContent: 'flex-end' }}>
@@ -90,7 +90,7 @@ const ForgotPassword = () => {
                         disabled={!isEmailValid}
                     >
                         <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}>
-                            Send Code
+                            Gửi mã OTP
                         </Text>
                     </TouchableOpacity>
                 </View>

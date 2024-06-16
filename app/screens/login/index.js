@@ -124,7 +124,7 @@ const LoginScreen = () => {
                 <View style={{ width: '85%', height: '60%', justifyContent: 'center', }}>
                     <View style={{ alignItems: 'center' }}>
                         <View style={{ borderWidth: 1, padding: 10, borderRadius: 10, borderColor: '#f2c601' }}>
-                            <Text style={{ fontSize: 16, fontWeight: '500', color: '#f2c601' }}>Please log in to learn together!</Text>
+                            <Text style={{ fontSize: 16, fontWeight: '500', color: '#f2c601' }}>Hãy đăng nhập để cùng học nhé!</Text>
                         </View>
                         <Image
                             source={require('../../../assets/lion2.png')}
@@ -143,7 +143,7 @@ const LoginScreen = () => {
                             <Image source={require('../../../assets/icon_person.png')} style={localStyles.icon} />
                             <TextInput
                                 style={localStyles.input}
-                                placeholder='User Name'
+                                placeholder='Tên tài khoán'
                                 keyboardType='default'
                                 value={username}
                                 onChangeText={handleUserNameChange}
@@ -154,7 +154,7 @@ const LoginScreen = () => {
                                 <Image source={require('../../../assets/lock.png')} style={localStyles.icon} />
                                 <TextInput
                                     style={localStyles.input}
-                                    placeholder='Password'
+                                    placeholder='Mật khẩu'
                                     secureTextEntry={hide ? true : false}
                                     value={password}
                                     onChangeText={handlePasswordChange}
@@ -175,7 +175,7 @@ const LoginScreen = () => {
                     <TouchableOpacity style={{ alignItems: 'center' }}
                         onPress={() => navigate('ForgotPassword', {})}
                     >
-                        <Text style={{ fontSize: 15, fontWeight: '500', color: 'purple' }}>Forgot password ?</Text>
+                        <Text style={{ fontSize: 15, fontWeight: '500', color: 'purple' }}>Quên mật khẩu?</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{ width: '100%', alignItems: 'center', height: '10%', justifyContent: 'center' }}>
@@ -198,19 +198,19 @@ const LoginScreen = () => {
                         }}
                     >
                         <Text style={{ fontSize: 17, fontWeight: '500', color: isFormValid ? 'black' : 'gray' }}>
-                            Sign In
+                            Đăng nhập
                         </Text>
                     </TouchableOpacity>
                 </View>
                 {/* Divider */}
                 <View style={styles.dividerContainer}>
                     <View style={styles.divider} />
-                    <Text style={styles.dividerContent}>OR</Text>
+                    <Text style={styles.dividerContent}>Hoặc</Text>
                     <View style={styles.divider} />
                 </View>
                 <View style={styles.signUpWrapper}>
                     <Text style={{ color: '#f2c601', fontSize: 15, fontWeight: '500' }}>
-                        Don't have an account
+                        Không có tài khoản?
                     </Text>
                     <TouchableOpacity
                         style={{ backgroundColor: '#f2c601', padding: 10, borderRadius: 10 }}
@@ -225,7 +225,7 @@ const LoginScreen = () => {
                                 fontWeight: '600',
                                 color: 'white'
                             }}>
-                            Sign Up
+                            Đăng ký
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     signUpWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'space-around',
         marginBottom: 12,
         width: '60%',
     }
