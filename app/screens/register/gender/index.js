@@ -100,7 +100,7 @@ const GenderScreen = () => {
                     }}
                     onPress={() => updateProfile()}
                 >
-                    <Text style={{ fontSize: 18, fontWeight: '500', color: '#FFFFFF' }}>Next</Text>
+                    <Text style={{ fontSize: 18, fontWeight: '500', color: '#FFFFFF' }}>Tiếp tục</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={{
@@ -119,7 +119,7 @@ const GenderScreen = () => {
                     }}
                     onPress={() => navigate('BirthdayScreen', {})}
                 >
-                    <Text style={{ fontSize: 18, fontWeight: '500', color: '#f2c601' }}>Skip</Text>
+                    <Text style={{ fontSize: 18, fontWeight: '500', color: '#f2c601' }}>Bỏ qua</Text>
                 </TouchableOpacity>
             </View>
         </View>

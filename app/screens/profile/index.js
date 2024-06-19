@@ -4,9 +4,10 @@ import {
     Alert,
     Modal,
     TouchableWithoutFeedback,
-    Platform
+    Platform,
+    TextInput
 } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Svg, { Line, G, Text as SvgText, Path } from 'react-native-svg';
 import * as d3Scale from 'd3-scale';
 import * as ImagePicker from 'expo-image-picker';
@@ -14,6 +15,7 @@ import moment from 'moment';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { Dropdown } from 'react-native-element-dropdown';
+import DateTimePicker from '@react-native-community/datetimepicker'
 
 import baseURL from '../../services/api/baseURL';
 
@@ -69,10 +71,11 @@ const ProfileScreen = () => {
     const user = useSelector((state) => state.authReducer.user);
     const account = useSelector((state) => state.authReducer.account);
     const token = useSelector((state) => state.authReducer.token);
-    // console.log('user', user);
+    console.log('user', user);
     // console.log('account', account);
     const [dataDay, setDataDay] = useState([])
     const [dataMonth, setDataMonth] = useState([])
+    const [updateInfo, setUpdateInfo] = useState(false)
 
     const getStaticsDay = () => {
         axios.get(`${baseURL}/profiles/${user?.id}/statistics/day`, {
@@ -368,7 +371,9 @@ const ProfileScreen = () => {
                 </View>
             </View>
             <View style={localStyles.body3}>
-                <TouchableOpacity style={styles.btn}>
+                <TouchableOpacity style={styles.btn}
+                    onPress={() => { setUpdateInfo(true) }}
+                >
                     <Image
                         source={require('../../../assets/edit.png')}
                         style={{ width: 15, height: 15 }}
@@ -441,7 +446,7 @@ const ProfileScreen = () => {
                                 }}
                             >
                                 <Text style={styles.modalText}>
-                                    Gallery
+                                    Thư viện
                                 </Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.button}
@@ -450,18 +455,171 @@ const ProfileScreen = () => {
                                 }}
                             >
                                 <Text style={styles.modalText}>
-                                    Camera
+                                    Máy ảnh
                                 </Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
+            {updateInfo && <UpdateInfo
+                visible={updateInfo}
+                onBack={() => setUpdateInfo(false)}
+                user={user}
+                account={account}
+            />}
         </SafeAreaView>
     )
 }
 
 export default ProfileScreen
+
+const UpdateInfo = ({ updateInfo, onBack, user, account }) => {
+    const [gender, setGender] = useState(user?.sex)
+    const [birthday, setBirthday] = useState(new Date(user?.birthday))
+    const [show, setShow] = useState(false);
+    const [tempDate, setTempDate] = useState(new Date(user?.birthday));
+    const onChange = (event, selectedDate) => {
+        if (event.type === "set") {
+            setTempDate(selectedDate || tempDate);
+        }
+        if (Platform.OS !== 'ios') {
+            setShow(false);
+            setBirthday(selectedDate || birthday);
+        }
+    };
+
+    const handleDonePress = () => {
+        setBirthday(tempDate);
+        setShow(false);
+    };
+    const GENDER_LIST = [
+        { value: true, name: 'Nam' },
+        { value: false, name: 'Nữ' },
+    ];
+    const showGender = useMemo(
+        () => (
+            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '90%' }}>
+                {GENDER_LIST.map((item) => (
+                    <TouchableOpacity
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                        }}
+                        onPress={() => setGender(item?.value)}
+                    >
+                        <View
+                            style={{
+                                marginRight: 4,
+                                width: 15,
+                                height: 15,
+                                borderRadius: 10,
+                                borderWidth: 1,
+                                borderColor: gender === item?.value ? 'black' : 'gray',
+                                backgroundColor: gender === item?.value ? 'black' : 'transparent',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            {gender === item?.value && (
+                                <View
+                                    style={{
+                                        width: 7,
+                                        height: 7,
+                                        borderRadius: 5,
+                                        backgroundColor: 'white',
+                                    }}
+                                />
+                            )}
+                        </View>
+                        <Text style={{ color: '#000', fontWeight: '600' }}>{item?.name}</Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
+        ),
+        [gender],
+    );
+    return (
+        <Modal visible={updateInfo} transparent animationType="fade">
+            <View
+                style={{
+                    flex: 1,
+                    backgroundColor: '#252525E6',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}>
+                <View
+                    style={{
+                        backgroundColor: '#fff',
+                        borderRadius: 20,
+                        paddingVertical: 36,
+                        paddingHorizontal: 18,
+                        paddingTop: 10,
+                        width: '87%',
+                        alignItems: 'center',
+                        justifyContent: 'space-evenly'
+                    }}>
+                    <View style={{ width: '100%', alignItems: 'flex-end' }}>
+                        <TouchableOpacity style={{ width: '10%', alignItems: 'center' }}
+                            onPress={onBack}
+                        >
+                            <Image
+                                source={require('../../../assets/close.png')}
+                                style={{ width: 20, height: 20 }}
+                                resizeMode='contain'
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    <Text style={[styles.text, { fontSize: 18, fontWeight: '600', marginBottom: 20 }]}>
+                        Chỉnh sửa thông tin
+                    </Text>
+                    <TouchableOpacity style={[styles.view, {
+                        height: Platform.OS === 'ios' ? (show ? '12%' : '15%') : '15%'
+                    }]}
+                        onPress={() => setShow(true)}
+                    >
+                        <Image
+                            source={require('../../../assets/gift.png')}
+                            style={styles.icon}
+                            resizeMode='contain'
+                        />
+                        <View style={styles.textInput}
+                        >
+                            <Text style={styles.text}>
+                                {moment(birthday).format('DD-MM-YYYY')}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                    {show && (
+                        <>
+                            <DateTimePicker
+                                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                value={tempDate}
+                                mode={'date'}
+                                is24Hour={true}
+                                onChange={onChange}
+                                textColor='#000'
+                                style={{ height: 100 }}
+                            />
+                            {Platform.OS === 'ios' && (
+                                <TouchableOpacity onPress={handleDonePress} style={styles.doneButton}>
+                                    <Text style={styles.doneButtonText}>Done</Text>
+                                </TouchableOpacity>
+                            )}
+                        </>
+                    )}
+                    {showGender}
+                    <TouchableOpacity style={[styles.button,
+                    { height: Platform.OS === 'ios' ? (show ? '10%' : '15%') : '15%', width: '90%' }]}>
+                        <Text style={{ color: '#fff', fontWeight: '600' }}>
+                            Lưu thay đổi
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </Modal>
+    )
+}
 
 const styles = StyleSheet.create({
     modalText: {
@@ -542,5 +700,30 @@ const styles = StyleSheet.create({
     itemTextStyle: {
         fontSize: 16,
         color: 'white',
-    }
+    },
+    view: {
+        flexDirection: 'row', alignItems: 'center', height: '15%', width: '90%', backgroundColor: '#fecacb',
+        borderRadius: 10, shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.2, shadowColor: '#000000', shadowRadius: 10,
+        elevation: 3, marginVertical: 10
+    },
+    icon: { width: 20, height: 20, tintColor: 'red', marginLeft: 10 },
+    text: { fontSize: 16, fontWeight: '500' },
+    textInput: {
+        fontSize: 16,
+        fontWeight: '500',
+        padding: 10,
+        flex: 1,
+    },
+    doneButton: {
+        backgroundColor: '#000',
+        padding: 10,
+        borderRadius: 10,
+        marginVertical: 10,
+        alignItems: 'center',
+    },
+    doneButtonText: {
+        color: '#fff',
+        fontWeight: '600',
+    },
 })

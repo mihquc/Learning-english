@@ -19,8 +19,9 @@ import Loader from '../../components/Load/loader';
 
 const GameScreen = () => {
     const answer = useSelector((state) => state.gameReducer.selectAnswers);
-    console.log('answer', answer)
     const rightAnswer = useSelector((state) => state.gameReducer.rightAnswers);
+    console.log('answer', answer)
+    console.log('rightAnswer', rightAnswer)
     const token = useSelector((state) => state.authReducer.token);
     const user = useSelector((state) => state.authReducer.user);
     const route = useRoute();
@@ -59,11 +60,10 @@ const GameScreen = () => {
     useEffect(() => {
         getAllGames();
     }, [])
-    // console.log(rightAnswer)
-    // console.log(answer)
     const [selectedAnswer, setSelectedAnswer] = useState(null)
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [checkAnswer, setCheckAnswer] = useState(false);
+    const [isCheckAnswer, setIsCheckAnswer] = useState(null)
     const [isCorrectAnswer, setCorrectAnswer] = useState(null);
     const [progress, setProgress] = useState()
     const [loading, setLoading] = useState(false)
@@ -169,10 +169,7 @@ const GameScreen = () => {
             await playSound(fileUri);
         }
     };
-    // console.log('games:', games)
-    // console.log('tsl:', games.length)
     const newGames = games.filter(item => item.isPlayed !== true);
-    // console.log('cc:', newGames.length);
     const questionss = newGames[currentQuestionIndex];
     const createProfileGame = () => {
         const formData = {
@@ -227,6 +224,11 @@ const GameScreen = () => {
                     question={question}
                     setSelectedAnswer={setSelectedAnswer}
                     handlePress={handlePress}
+                    checkAnswer={checkAnswer}
+                    setCheckAnswer={setCheckAnswer}
+                    setCorrectAnswer={setCorrectAnswer}
+                    updateGame={updateGame}
+
                 />;
             case 'Foreign Sentence Scramble':
                 return <ForeignSentenceScramble
@@ -269,7 +271,7 @@ const GameScreen = () => {
                         </View>
                         {!isCorrectAnswer && (<View style={{ width: '90%' }}>
                             <Text style={{ fontSize: 17, fontWeight: '500', color: '#FFFFFF', paddingHorizontal: 10 }}>
-                                Correct Answer: {rightAnswer}
+                                Đáp án đúng: {rightAnswer}
                             </Text>
                         </View>
                         )}
@@ -287,7 +289,7 @@ const GameScreen = () => {
                             }}
                         >
                             <Text style={{ color: isCorrectAnswer ? '#f2c601' : '#ff6060', fontSize: 17, fontWeight: '500', }}>
-                                Continue
+                                Tiếp tục
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -306,7 +308,7 @@ const GameScreen = () => {
                             handleSound(answer === rightAnswer)
                         }}
                     >
-                        <Text style={{ color: '#FFFFFF' }}>Check Answer</Text>
+                        <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 17 }}>Kiểm tra</Text>
                     </TouchableOpacity>
                 )}
             </View>
@@ -378,7 +380,7 @@ const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
                                     source={{ uri: option?.photoFilePath }}
                                     style={styles.image}
                                 />
-                                <Text style={styles.optionText}>{option.name}</Text>
+                                {/* <Text style={styles.optionText}>{option.name}</Text> */}
                             </TouchableOpacity>
                         )
                     })}
@@ -399,6 +401,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
     const words = question.options.map(item => item.name);
     useEffect(() => {
         setUnselectedWords(shuffleArray([...words]));
+        setSelectedWords([])
         dispatch({
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
@@ -453,7 +456,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
                 </View>
 
             </TouchableOpacity>
-            <View style={{ width: '90%', height: 'auto', flexDirection: 'row', borderBottomWidth: 0.2, flexWrap: 'wrap' }}>
+            <View style={{ width: '90%', height: 'auto', flexDirection: 'row', borderBottomWidth: 0.5, flexWrap: 'wrap' }}>
                 {selectedWords.map((word, index) => (
                     <TouchableOpacity key={index}
                         onPress={() => handleDeselectWord(index)}
@@ -465,7 +468,9 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
             </View>
             <View style={{ width: '90%', height: 'auto', flexDirection: 'row', borderBottomWidth: 0.2, flexWrap: 'wrap' }}>
                 {unselectedWords.map((word, index) => (
-                    <TouchableOpacity key={index} onPress={() => handleSelectWord(index)} style={styles.wordButton}>
+                    <TouchableOpacity key={index} onPress={() => handleSelectWord(index)}
+                        style={styles.wordButton}
+                        disabled={checkAnswer}>
                         <Text style={styles.wordText}>{word}</Text>
                     </TouchableOpacity>
                 ))}
@@ -473,7 +478,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
         </View>
     );
 };
-const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, handlePress }) => {
+const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, checkAnswer, handlePress, setCheckAnswer, setCorrectAnswer, updateGame }) => {
     const [recording, setRecording] = useState();
     const [soundUri, setSoundUri] = useState('');
     const [waveformData, setWaveformData] = useState([]);
@@ -588,7 +593,6 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, handlePres
             UploadAudio();
         }
     }, [soundUri])
-    console.log('question?.id', question?.id)
 
     const UploadAudio = () => {
         const formData = new FormData();
@@ -606,28 +610,35 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, handlePres
         })
             .then((response) => {
                 console.log(response.data?.mediaLink)
-                getText(response.data?.mediaLink)
+                compare(response.data?.mediaLink)
+                // getText(response.data?.mediaLink)
                 // setSelectedAnswer()
             }).catch((error) => {
                 console.error(error.response?.data)
             })
     }
-    const getText = (uri) => {
+    const [similarity, setSimilarity] = useState(null)
+    console.log('id:', question?.id)
+    const compare = (uri) => {
         formData = {
-            wavFileGcsUri: uri
+            wavFileGcsUri: uri,
+            rightAnswer: question.rightAnswer
         }
-        axios.post(`${baseURL}/games/voice/translateToText`, formData, {
+        axios.post(`${baseURL}/games/voice/similarity`, formData, {
             headers: {
                 'Accept': 'text/plain',
                 'Authorization': 'Bearer ' + token,
                 'Content-Type': 'application/json'
             }
         }).then((response) => {
-            console.log('data', response.data?.text)
+            console.log('response', response.data)
             setText(response.data?.text)
-            // selectAnswers(response.data?.text)
-        }).catch((err) => {
-            console.log('errorr', err)
+            setCheckAnswer(true)
+            setCorrectAnswer(response.data?.similarity)
+            updateGame(question?.id, response.data?.similarity)
+            setSimilarity(response.data?.similarity)
+        }).catch((error) => {
+            console.log('error', error)
         })
     }
     useEffect(() => {
@@ -657,7 +668,7 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, handlePres
                 onPress={() => handlePress(question.rightAnswer)}
             >
                 <View style={{ borderWidth: 1, padding: 10, borderRadius: 10, borderColor: '#f2c601' }}>
-                    <Text style={{ fontSize: 16, fontWeight: '500', color: '#f2c601' }}>{question.rightAnswer}</Text>
+                    <Text style={{ fontSize: 17, fontWeight: '600', color: '#f2c601' }}>{question.rightAnswer}</Text>
                 </View>
                 <Image
                     source={require('../../../assets/lionvoice.png')}
@@ -671,6 +682,7 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, handlePres
                     alignItems: 'center', backgroundColor: '#f2c601', borderRadius: 10
                 }}
                     onPress={recording ? stopRecording : startRecording}
+                // disabled={soundUri !== '' ? true : false}
                 >
                     <Image
                         source={require('../../../assets/voice.png')}
@@ -691,7 +703,10 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, handlePres
                     <Line />
                 </AreaChart>
             )}
-            {text && <Text style={[styles.wordText, { textAlign: 'center', color: 'red' }]}>You said: {text}</Text>}
+            {text && similarity !== null && <Text style={[styles.wordText,
+            { textAlign: 'center', color: similarity ? '#f2c601' : 'red' }]}>
+                Bạn nói: {text}
+            </Text>}
         </View>
     );
 };
@@ -865,6 +880,7 @@ const ForeignSentenceScramble = ({ question, onNext, setSelectedAnswer, handlePr
     const words = question.options.map(item => item.name);
     useEffect(() => {
         setUnselectedWords(shuffleArray([...words]));
+        setSelectedWords([])
         dispatch({
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
@@ -978,10 +994,10 @@ const styles = StyleSheet.create({
         height: '30%',
     },
     image: {
-        width: 100,
-        height: 100,
+        width: '100%',
+        height: '100%',
         resizeMode: 'contain',
-        borderRadius: 5
+        borderRadius: 15
     },
     wordButton: {
         margin: 5,

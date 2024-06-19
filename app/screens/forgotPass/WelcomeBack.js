@@ -17,7 +17,7 @@ const WelcomeBack = () => {
                     justifyContent: 'flex-start', justifyContent: 'space-between'
                 }}>
                     <Text style={{ textAlign: 'center', fontSize: 22, fontWeight: '600', color: '#f2c601' }}>
-                        Welcome Back!
+                        Chào mừng bạn trở lại!
                     </Text>
                     <Image
                         source={require('../../../assets/comback.png')}
@@ -25,7 +25,7 @@ const WelcomeBack = () => {
                 </View>
                 <View style={styles.viewInput}>
                     <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: '600' }}>
-                        You have successfully reset and create a new password
+                        Bạn đã tạo mật khẩu mới thành công.
                     </Text>
                 </View>
                 <View style={{ width: '100%', alignItems: 'center', height: '20%', justifyContent: 'flex-end' }}>
@@ -44,7 +44,7 @@ const WelcomeBack = () => {
                         onPress={() => goPopToTop()}
                     >
                         <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}>
-                            Sign In
+                            Đăng nhập
                         </Text>
                     </TouchableOpacity>
                 </View>

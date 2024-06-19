@@ -47,13 +47,15 @@ const HomeBar = ({ ...props }) => {
     [],
   );
   const image = useSelector((state) => state.authReducer.image);
-  // console.log(image)
+  console.log('image', image)
+  const user = useSelector((state) => state.authReducer.user);
+  console.log(user)
   return (
     <View style={[localStyles.header, props?.backGroundColorHeader]}>
       <View style={{ flexDirection: 'row' }}>
         <Image
           style={localStyles.cardAvatar}
-          source={{ uri: image == ' ' || !image ? 'https://i.postimg.cc/Bv2nscWb/icon-default-avatar.png' : image }}
+          source={{ uri: image !== '' ? image : (!user?.avatarFilePath ? 'https://i.postimg.cc/Bv2nscWb/icon-default-avatar.png' : user?.avatarFilePath) }}
           resizeMode="cover"
         />
         {/* <View style={{ height: 'auto', justifyContent: 'center' }}>

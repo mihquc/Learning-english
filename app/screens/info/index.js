@@ -6,12 +6,13 @@ import moment from 'moment';
 const Info = () => {
     const user = useSelector((state) => state.authReducer.user);
     const account = useSelector((state) => state.authReducer.account);
+    const image = useSelector((state) => state.authReducer.image);
     return (
         <View style={styles.container}>
             <View style={{ borderWidth: 1, borderRadius: 11 }}>
                 <Image
                     style={{ width: 100, height: 100, borderRadius: 10, }}
-                    source={{ uri: (user?.avatarFilePath == ' ' || !user?.avatarFilePath ? 'https://i.postimg.cc/Bv2nscWb/icon-default-avatar.png' : user?.avatarFilePath) }}
+                    source={{ uri: image == ' ' || !image ? (user?.avatarFilePath ? user?.avatarFilePath : 'https://i.postimg.cc/Bv2nscWb/icon-default-avatar.png') : image }}
                     resizeMode='cover'
                 />
             </View>
@@ -29,7 +30,9 @@ const Info = () => {
                     style={styles.icon}
                     resizeMode='contain'
                 />
-                <Text style={styles.text}>{moment(user?.birthday).format('DD MMM, YYYY')}</Text>
+                <Text style={styles.text}>
+                    {moment(user?.birthday).format('DD-MM-YYYY')}
+                </Text>
             </View>
             <View style={styles.view}>
                 <Image
