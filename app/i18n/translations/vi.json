@@ -2,14 +2,16 @@
     "navigation_header": {
         "LoginScreen": "Đăng nhập",
         "Register": "Đăng ký",
-        "Settings": "Settings",
-        "SearchScreen": "Tìm kiếm sản phẩm",
-        "TermsOfContract": "Hợp đồng vay"
+        "Settings": "Cài đặt",
+        "Info": "Trang thông tin",
+        "ForgotPassword": "Quên mật khẩu",
+        "ResetPassword": "Mã OTP",
+        "NewPassword": "Cài đặt mật khẩu"
     },
     "register": {
         "gender": "Giới tính của bạn ?",
         "register": "Tạo tài khoản",
-        "birthday": "Ngày sinh của ban ?",
+        "birthday": "Ngày sinh của bạn ?",
         "agreeToTerms": "Điều khoản sử dụng dịch vụ.",
         "agreeConsent": "Thu thập, sử dụng thông tin cá nhân.",
         "emailService": "Quảng cáo qua e-mail"
