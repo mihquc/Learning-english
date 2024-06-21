@@ -1,13 +1,6 @@
 import { Dimensions, StyleSheet, Text, View, Image, Platform } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react'
-import HomeScreen from '../screens/home';
-import { useTheme } from 'react-native-paper';
-import LoginScreen from '../screens/login';
-import Pronounce from '../screens/pronounce';
-import ProfileScreen from '../screens/profile';
-import BackBar from '../components/BackBar';
-import HomeBar from '../components/header/HomeBar';
 import HomeNavigator from './HomeNavigator';
 import ProfileNavigator from './ProfileNavigator';
 
