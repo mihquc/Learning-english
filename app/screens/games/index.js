@@ -228,13 +228,14 @@ const GameScreen = () => {
                     setCheckAnswer={setCheckAnswer}
                     setCorrectAnswer={setCorrectAnswer}
                     updateGame={updateGame}
-
+                    handleSound={handleSound}
                 />;
             case 'Foreign Sentence Scramble':
                 return <ForeignSentenceScramble
                     question={question}
                     setSelectedAnswer={setSelectedAnswer}
                     handlePress={handlePress}
+                    checkAnswer={checkAnswer}
                 />;
             case 'Fill Blank':
                 return <FillBlank
@@ -328,6 +329,7 @@ const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
         })
+        handlePress(question?.rightAnswer)
     }, [question])
     const selectAnswers = (answer) => {
         dispatch({
@@ -396,8 +398,8 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
     const [selectedWords, setSelectedWords] = useState([]);
     const [unselectedWords, setUnselectedWords] = useState([]);
     const dispatch = useDispatch();
-
-    // console.log('option:', question.options)
+    console.log('question', question)
+    console.log('option:', question.options)
     const words = question.options.map(item => item.name);
     useEffect(() => {
         setUnselectedWords(shuffleArray([...words]));
@@ -406,6 +408,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
         })
+        handlePress(question.rightAnswer)
     }, [question]);
     const selectAnswers = () => {
         const userAnswerString = selectedWords.join(' ');
@@ -456,7 +459,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
                 </View>
 
             </TouchableOpacity>
-            <View style={{ width: '90%', height: 'auto', flexDirection: 'row', borderBottomWidth: 0.5, flexWrap: 'wrap' }}>
+            <View style={styles.selectWords}>
                 {selectedWords.map((word, index) => (
                     <TouchableOpacity key={index}
                         onPress={() => handleDeselectWord(index)}
@@ -466,7 +469,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
                     </TouchableOpacity>
                 ))}
             </View>
-            <View style={{ width: '90%', height: 'auto', flexDirection: 'row', borderBottomWidth: 0.2, flexWrap: 'wrap' }}>
+            <View style={styles.selectWords}>
                 {unselectedWords.map((word, index) => (
                     <TouchableOpacity key={index} onPress={() => handleSelectWord(index)}
                         style={styles.wordButton}
@@ -478,7 +481,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
         </View>
     );
 };
-const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, checkAnswer, handlePress, setCheckAnswer, setCorrectAnswer, updateGame }) => {
+const PronunciationQuestion = ({ question, setSelectedAnswer, handleSound, handlePress, setCheckAnswer, setCorrectAnswer, updateGame }) => {
     const [recording, setRecording] = useState();
     const [soundUri, setSoundUri] = useState('');
     const [waveformData, setWaveformData] = useState([]);
@@ -494,6 +497,9 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, checkAnswe
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
         })
+        setWaveformData([])
+        setText(null)
+        handlePress(question.rightAnswer)
     }, [question])
 
     useEffect(() => {
@@ -563,7 +569,7 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, checkAnswe
                 setSoundUri(uri);
 
                 setRecording(null);
-                setSelectedAnswer(uri)
+                // setSelectedAnswer(uri)
 
                 const { sound } = await Audio.Sound.createAsync(
                     { uri },
@@ -637,6 +643,8 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, checkAnswe
             setCorrectAnswer(response.data?.similarity)
             updateGame(question?.id, response.data?.similarity)
             setSimilarity(response.data?.similarity)
+            handleSound(response.data?.similarity)
+            setSelectedAnswer(response.data)
         }).catch((error) => {
             console.log('error', error)
         })
@@ -667,8 +675,16 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, checkAnswe
             <TouchableOpacity style={{ alignItems: 'center' }}
                 onPress={() => handlePress(question.rightAnswer)}
             >
-                <View style={{ borderWidth: 1, padding: 10, borderRadius: 10, borderColor: '#f2c601' }}>
-                    <Text style={{ fontSize: 17, fontWeight: '600', color: '#f2c601' }}>{question.rightAnswer}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', width: '69%', justifyContent: 'space-between' }}>
+                    <Image
+                        source={require('../../../assets/speaker.png')}
+                        style={{ width: 25, height: 25, tintColor: '#f2c601' }}
+                    />
+                    <View style={{ borderWidth: 1, padding: 10, borderRadius: 10, borderColor: '#f2c601' }}>
+                        <Text style={{ fontSize: 17, fontWeight: '600', color: '#f2c601', textAlign: 'center' }}>
+                            {question.rightAnswer}
+                        </Text>
+                    </View>
                 </View>
                 <Image
                     source={require('../../../assets/lionvoice.png')}
@@ -717,6 +733,7 @@ const SentenceChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
         })
+        handlePress(question.rightAnswer)
     }, [question])
     const selectAnswers = (answer) => {
         dispatch({
@@ -773,6 +790,7 @@ const FillBlank = ({ question, onNext, setSelectedAnswer, handlePress }) => {
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
         });
+        handlePress(question.rightAnswer)
     }, [question]);
 
     const selectAnswers = (string) => {
@@ -793,7 +811,6 @@ const FillBlank = ({ question, onNext, setSelectedAnswer, handlePress }) => {
         selectAnswers(newString)
     }, [selectedWords, question, unselectedWords]);
 
-    // console.log('selectedWords', parts.join(' '))
     const handleSelectWord = (index) => {
         const newSelectedWords = [...selectedWords];
         newSelectedWords[blankPosition] = unselectedWords[index];
@@ -872,7 +889,7 @@ const FillBlank = ({ question, onNext, setSelectedAnswer, handlePress }) => {
     );
 
 }
-const ForeignSentenceScramble = ({ question, onNext, setSelectedAnswer, handlePress }) => {
+const ForeignSentenceScramble = ({ question, checkAnswer, setSelectedAnswer, handlePress }) => {
     const [selectedWords, setSelectedWords] = useState([]);
     const [unselectedWords, setUnselectedWords] = useState([]);
     const dispatch = useDispatch();
@@ -885,6 +902,7 @@ const ForeignSentenceScramble = ({ question, onNext, setSelectedAnswer, handlePr
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
         })
+        handlePress(question.question)
     }, [question]);
     const selectAnswers = () => {
         const userAnswerString = selectedWords.join(' ');
@@ -898,7 +916,6 @@ const ForeignSentenceScramble = ({ question, onNext, setSelectedAnswer, handlePr
     }, [selectedWords])
     const handleSelectWord = (index) => {
         const word = unselectedWords[index];
-        // handlePress(word)
         setUnselectedWords(unselectedWords.filter((_, i) => i !== index));
         setSelectedWords([...selectedWords, word]);
         if (unselectedWords.length >= 0) {
@@ -945,7 +962,7 @@ const ForeignSentenceScramble = ({ question, onNext, setSelectedAnswer, handlePr
                     <TouchableOpacity key={index}
                         onPress={() => handleDeselectWord(index)}
                         style={styles.wordButton}
-                    // disabled={checkAnswer}
+                        disabled={checkAnswer}
                     >
                         <Text style={styles.wordText}>{word}</Text>
                     </TouchableOpacity>
@@ -956,7 +973,10 @@ const ForeignSentenceScramble = ({ question, onNext, setSelectedAnswer, handlePr
                 flexWrap: 'wrap', justifyContent: 'center'
             }}>
                 {unselectedWords.map((word, index) => (
-                    <TouchableOpacity key={index} onPress={() => handleSelectWord(index)} style={styles.wordButton}>
+                    <TouchableOpacity key={index}
+                        onPress={() => handleSelectWord(index)}
+                        style={styles.wordButton}
+                        disabled={checkAnswer}>
                         <Text style={styles.wordText}>{word}</Text>
                     </TouchableOpacity>
                 ))}
@@ -1074,5 +1094,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '500',
         color: '#ffffff'
+    },
+    selectWords: {
+        width: '90%',
+        height: 'auto',
+        flexDirection: 'row',
+        borderBottomWidth: 0.5,
+        flexWrap: 'wrap',
+        justifyContent: 'center'
     }
 })

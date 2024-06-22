@@ -32,9 +32,9 @@ const CompleteGame = () => {
     }, [])
     return (
         <View style={styles.container}>
-            <View style={styles.viewButton}>
+            <View style={styles.viewBody}>
                 <Text style={styles.text}>Bạn đã hoàn thành chủ đề {topic?.name}</Text>
-                <Text style={styles.text}>{topic?.numberOfPlayedGames} / {topic?.numberOfGame}</Text>
+                <Text style={styles.text}>Số câu chính xác: {topic?.numberOfPlayedGames} / {topic?.numberOfGame}</Text>
                 <Image
                     source={require('../../../assets/complete.png')}
                 />
@@ -59,12 +59,14 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#302627',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-evenly',
     },
     text: {
         color: '#f2c601',
         fontSize: 20,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        textAlign: 'center',
+        width: '90%'
     },
     button: {
         backgroundColor: '#f2c601',
@@ -83,6 +85,12 @@ const styles = StyleSheet.create({
     },
     viewButton: {
         width: '100%',
-        alignItems: 'center'
+        alignItems: 'center',
+    },
+    viewBody: {
+        width: '100%',
+        height: '40%',
+        alignItems: 'center',
+        justifyContent: 'space-around'
     }
 })
