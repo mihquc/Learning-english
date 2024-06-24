@@ -12,6 +12,7 @@ import { Provider } from 'react-redux';
 import { store } from './app/redux/store';
 import ProgressPlay from './app/components/Load/progressBarPlay';
 import CompleteGame from './app/components/complete/CompleteGame';
+import Mistakes from './app/components/mistakes';
 
 export default function App() {
   const [loading, setloading] = useState(false);
@@ -24,7 +25,7 @@ export default function App() {
     <AnimatedSplash
       translucent={false}
       isLoaded={loading}
-      logoImage={require('./assets/logo.png')}
+      logoImage={require('./assets/Logo.png')}
       backgroundColor={"#FFEBCD"}
       logoHeight={200}
       logoWidth={200}
@@ -56,6 +57,10 @@ const Tab = () => {
           <Stack.Screen
             name='CompleteGame'
             component={CompleteGame}
+          />
+          <Stack.Screen
+            name='Mistakes'
+            component={Mistakes}
           />
         </Stack.Navigator>
       </NavigationContainer>

@@ -20,13 +20,15 @@ import Loader from '../../components/Load/loader';
 const GameScreen = () => {
     const answer = useSelector((state) => state.gameReducer.selectAnswers);
     const rightAnswer = useSelector((state) => state.gameReducer.rightAnswers);
-    console.log('answer', answer)
-    console.log('rightAnswer', rightAnswer)
+    // console.log('answer', answer)
+    // console.log('rightAnswer', rightAnswer)
     const token = useSelector((state) => state.authReducer.token);
     const user = useSelector((state) => state.authReducer.user);
     const route = useRoute();
     const id = route.params?.id;
-    console.log(id);
+    const reset = route.params?.reset;
+    // console.log('reset', reset);
+    // console.log(user?.id)
     const { navigate } = useNavigationService();
     const [games, setGames] = useState([]);
     const getAllGames = () => {
@@ -37,29 +39,72 @@ const GameScreen = () => {
             }
         })
             .then((response) => {
-                // console.log('response', response.data?.games)
-                setGames(response.data?.games,)
+                console.log('response:s', response.data?.games)
+                setGames(response.data?.games)
             })
-            .catch((error) => console.log('error', error))
+            .catch((error) => console.log('error1:', error.response))
+    }
+    const getAllGamesError = () => {
+        axios.get(`${baseURL}/games/error?ProfileId=${user?.id}&TopicId=${id}`, {
+            headers: {
+                'Accept': 'text/plain',
+                'Authorization': 'bearer ' + token,
+            }
+        })
+            .then((response) => {
+                console.log('response', response.data?.games)
+                setGames(response.data?.games)
+            })
+            .catch((error) => console.log('error2:', error.response))
     }
     const updateGame = (gameId, isCorrectAnswer) => {
         console.log('isCorrectAnswer', isCorrectAnswer)
-        formData = {
-            isPlayed: isCorrectAnswer
-        }
-        axios.patch(`${baseURL}/profiles/${user?.id}/games/${gameId}/play`, formData, {
-            headers: {
-                'Accept': 'text/plain',
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json',
+        if (!state) {
+            formData = {
+                profileId: user?.id,
+                gameId: gameId,
+                isPlayed: isCorrectAnswer
             }
-        }).then((response) => {
-            console.log('response', response.data)
-        }).catch((err) => console.error('errr', err.response))
+            axios.patch(`${baseURL}/profileGames/play`, formData, {
+                headers: {
+                    'Accept': 'text/plain',
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json-patch+json',
+                }
+            }).then((response) => {
+                console.log('response', response.data)
+            }).catch((err) => console.error('errr', err.response))
+        } else {
+            if (isCorrectAnswer) {
+                formData = {
+                    profileId: user?.id,
+                    gameId: gameId,
+                    isRepeat: isCorrectAnswer
+                }
+                axios.patch(`${baseURL}/profileGames/repeat`, formData, {
+                    headers: {
+                        'Accept': 'text/plain',
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json-patch+json',
+                    }
+                }).then((response) => {
+                    console.log('response1', response.data)
+                }).catch((err) => console.error('errr', err.response))
+            }
+            // if (isCorrectAnswer) {
+            //     const newGames = games.filter(question => question.id !== gameId);
+            //     setGames([])
+            //     setGames(newGames)
+            // }
+        }
     }
     useEffect(() => {
-        getAllGames();
-    }, [])
+        if (reset) {
+            setCurrentQuestionIndex(0)
+            console.log('ccccc')
+        }
+        getAllGames()
+    }, [reset])
     const [selectedAnswer, setSelectedAnswer] = useState(null)
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [checkAnswer, setCheckAnswer] = useState(false);
@@ -70,16 +115,33 @@ const GameScreen = () => {
     const [correctSound, setCorrectSound] = useState();
     const [incorrectSound, setIncorrectSound] = useState();
     const [sound, setSound] = useState(null);
+    const [state, setState] = useState(false)
+    console.log('state', state)
     const handleNext = () => {
-        if (currentQuestionIndex + 1 === newGames.length) {
-            setLoading(true);
-            setTimeout(() => {
-                navigate('CompleteGame', { id: id })
-                setLoading(false);
-            }, 2000);
+        if (currentQuestionIndex + 1 === games.length) {
+            if (!state) {
+                setLoading(true);
+                setTimeout(() => {
+                    // getAllGames()
+                    // setCurrentQuestionIndex(0)
+                    setProgress()
+                    navigate('Mistakes')
+                    setState(true)
+                    console.log('bbbbb')
+                    setLoading(false);
+                }, 2000);
+            } else {
+                if (games.length > 0) {
+                    console.log('aaaa')
+                    // getAllGames()
+                    // navigate('CompleteGame', { id: id })
+                    setCurrentQuestionIndex(0)
+                    setProgress()
+                }
+            }
         } else {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
-            setProgress((currentQuestionIndex + 1) / newGames.length)
+            setProgress((currentQuestionIndex + 1) / games.length)
             console.log('progress', progress)
         }
     };
@@ -169,8 +231,8 @@ const GameScreen = () => {
             await playSound(fileUri);
         }
     };
-    const newGames = games.filter(item => item.isPlayed !== true);
-    const questionss = newGames[currentQuestionIndex];
+    // const games = games.filter(item => item.isPlayed !== true);
+    const questionss = games[currentQuestionIndex];
     const createProfileGame = () => {
         const formData = {
             profileId: user?.id,
@@ -188,10 +250,12 @@ const GameScreen = () => {
         }).catch((err) => console.error('err', err))
     }
     useEffect(() => {
-        createProfileGame();
-    }, [questionss])
+        if (!state) {
+            createProfileGame();
+        }
+    }, [questionss, state])
     const renderQuestion = () => {
-        const question = newGames[currentQuestionIndex];
+        const question = games[currentQuestionIndex];
         switch (question?.kind) {
             case 'Picture Choice':
                 return <MultipleChoiceQuestion
@@ -398,8 +462,8 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
     const [selectedWords, setSelectedWords] = useState([]);
     const [unselectedWords, setUnselectedWords] = useState([]);
     const dispatch = useDispatch();
-    console.log('question', question)
-    console.log('option:', question.options)
+    // console.log('question', question)
+    // console.log('option:', question.options)
     const words = question.options.map(item => item.name);
     useEffect(() => {
         setUnselectedWords(shuffleArray([...words]));
@@ -675,7 +739,7 @@ const PronunciationQuestion = ({ question, setSelectedAnswer, handleSound, handl
             <TouchableOpacity style={{ alignItems: 'center' }}
                 onPress={() => handlePress(question.rightAnswer)}
             >
-                <View style={{ flexDirection: 'row', alignItems: 'center', width: '69%', justifyContent: 'space-between' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', width: 'auto', justifyContent: 'space-between' }}>
                     <Image
                         source={require('../../../assets/speaker.png')}
                         style={{ width: 25, height: 25, tintColor: '#f2c601' }}
