@@ -11,7 +11,6 @@ const GenderScreen = () => {
     const route = useRoute();
     const token = route.params?.token;
     const [user, setUser] = useState()
-    console.log('token:', route.params?.token)
     const getProfile = () => {
         axios.get(`${baseURL}/profiles`, {
             headers: {
@@ -44,7 +43,7 @@ const GenderScreen = () => {
             .then((response) => {
                 console.log('response', response.data)
                 if (response.status === 200) {
-                    navigate('BirthdayScreen', { token: token, id: user?.id });
+                    navigate('BirthdayScreen', { token: token });
                 }
             }).catch((error) => console.error('error:', error))
     }
@@ -117,7 +116,7 @@ const GenderScreen = () => {
                         shadowRadius: 3.5,
                         elevation: 3
                     }}
-                    onPress={() => navigate('BirthdayScreen', {})}
+                    onPress={() => navigate('BirthdayScreen', { token: token })}
                 >
                     <Text style={{ fontSize: 18, fontWeight: '500', color: '#f2c601' }}>Bỏ qua</Text>
                 </TouchableOpacity>

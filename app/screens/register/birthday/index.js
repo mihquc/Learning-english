@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, Pressable, TouchableOpacity, Platform, Modal } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import moment from 'moment'
 import axios from 'axios'
@@ -12,20 +12,38 @@ const BirthdayScreen = () => {
     const [show, setShow] = useState(false);
     const route = useRoute()
     const token = route.params?.token;
-    const id = route.params?.id;
-    console.log(route.params)
+    const [user, setUser] = useState([]);
     const onChange = (event, selectedDate) => {
         setBirthday(selectedDate);
         setShow(false);
     };
     const [modalVisible, setModalVisible] = useState(false);
     const { navigate, goPop, goBack, goPopToTop } = useNavigationService();
-
+    const getProfile = () => {
+        axios.get(`${baseURL}/profiles`, {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        })
+            .then((response) => {
+                console.log('response', response.data)
+                setUser(response.data)
+            })
+            .catch((error) => {
+                console.log('error:', error)
+            })
+    }
+    useEffect(() => {
+        getProfile()
+    }, [])
     const updateProfile = () => {
         const data = {
+            avatarFilePath: user?.avatarFilePath,
             birthday: moment(birthday).format('YYYY-MM-DD'),
+            sex: user?.sex,
+            status: user?.status
         }
-        axios.put(`${baseURL}/profiles/${id}`, data,
+        axios.put(`${baseURL}/profiles/${user?.id}`, data,
             {
                 headers: {
                     'Authorization': 'Bearer ' + token,

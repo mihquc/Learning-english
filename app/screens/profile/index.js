@@ -1,13 +1,13 @@
 import {
-    SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity, useColorScheme, Dimensions,
+    SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity, Dimensions,
     StatusBar,
     Alert,
     Modal,
     TouchableWithoutFeedback,
     Platform,
-    TextInput
 } from 'react-native'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Line, G, Text as SvgText, Path } from 'react-native-svg';
 import * as d3Scale from 'd3-scale';
 import * as ImagePicker from 'expo-image-picker';
@@ -28,7 +28,6 @@ const ProfileScreen = () => {
                 flex: 1,
                 alignItems: 'center',
                 backgroundColor: '#FFFFFF',
-                // justifyContent: 'flex-start'
             },
             body1: {
                 alignItems: 'center',
@@ -60,19 +59,25 @@ const ProfileScreen = () => {
                 shadowRadius: 2, elevation: 5, justifyContent: 'center'
             },
             bodyChild2: {
-                alignItems: 'center'
+                alignItems: 'center',
+                width: '40%'
             },
             textBodyChild2: {
                 fontWeight: '600',
-                fontSize: 15
+                fontSize: 16
+            },
+            textChild2: {
+                fontWeight: '400',
+                color: 'gray',
+                textAlign: 'center',
+                fontSize: 13
             }
         }), [])
     const dispatch = useDispatch()
     const user = useSelector((state) => state.authReducer.user);
     const account = useSelector((state) => state.authReducer.account);
     const token = useSelector((state) => state.authReducer.token);
-    console.log('user', user);
-    // console.log('account', account);
+    // console.log('user', user);
     const [dataDay, setDataDay] = useState([])
     const [dataMonth, setDataMonth] = useState([])
     const [updateInfo, setUpdateInfo] = useState(false)
@@ -84,7 +89,7 @@ const ProfileScreen = () => {
                 'Accept': 'text/plain'
             }
         }).then((response) => {
-            // console.log('response', response.data?.days)
+            console.log('response', response.data?.days)
             setDataDay(response.data?.days)
         }).catch(error => {
             console.log('error', error.response)
@@ -97,16 +102,18 @@ const ProfileScreen = () => {
                 'Accept': 'text/plain'
             }
         }).then((response) => {
-            // console.log('response', response.data?.months)
+
             setDataMonth(response.data?.months)
         }).catch(error => {
             console.log('error', error.response)
         })
     }
-    useEffect(() => {
-        getStaticsDay()
-        getStaticsMonth()
-    }, [])
+    useFocusEffect(
+        useCallback(() => {
+            getStaticsDay()
+            getStaticsMonth()
+        }, [])
+    );
 
     const data = [
         { label: 'Ngày', value: '1' },
@@ -336,6 +343,7 @@ const ProfileScreen = () => {
         })
     }
 
+
     return (
         <SafeAreaView style={localStyles.container}>
             <View style={localStyles.body1}>
@@ -363,11 +371,11 @@ const ProfileScreen = () => {
             <View style={localStyles.body2}>
                 <View style={localStyles.bodyChild2}>
                     <Text style={localStyles.textBodyChild2}>{totalNumberOfGamesMonths}</Text>
-                    <Text style={{ fontWeight: '400', color: 'gray' }}>Trò chơi trong tháng</Text>
+                    <Text style={localStyles.textChild2}>Trò chơi đúng trong tháng</Text>
                 </View>
                 <View style={localStyles.bodyChild2}>
                     <Text style={localStyles.textBodyChild2}>{numberOfGamesToday}</Text>
-                    <Text style={{ fontWeight: '400', color: 'gray' }}>Trò chơi trong ngày</Text>
+                    <Text style={localStyles.textChild2}>Trò chơi đúng trong ngày</Text>
                 </View>
             </View>
             <View style={localStyles.body3}>
@@ -386,6 +394,7 @@ const ProfileScreen = () => {
                 </TouchableOpacity>
 
                 <Dropdown
+                    showsVerticalScrollIndicator={false}
                     style={[styles.dropdown]}
                     placeholderStyle={styles.selectedTextStyle}
                     selectedTextStyle={styles.selectedTextStyle}
@@ -466,7 +475,8 @@ const ProfileScreen = () => {
                 visible={updateInfo}
                 onBack={() => setUpdateInfo(false)}
                 user={user}
-                account={account}
+                token={token}
+                setUpdateInfo={setUpdateInfo}
             />}
         </SafeAreaView>
     )
@@ -474,7 +484,8 @@ const ProfileScreen = () => {
 
 export default ProfileScreen
 
-const UpdateInfo = ({ updateInfo, onBack, user, account }) => {
+const UpdateInfo = ({ updateInfo, onBack, user, token, setUpdateInfo }) => {
+    const dispatch = useDispatch()
     const [gender, setGender] = useState(user?.sex)
     const [birthday, setBirthday] = useState(new Date(user?.birthday))
     const [show, setShow] = useState(false);
@@ -539,6 +550,29 @@ const UpdateInfo = ({ updateInfo, onBack, user, account }) => {
         ),
         [gender],
     );
+    const updateBirthdayGender = () => {
+        const data = {
+            avatarFilePath: user?.avatarFilePath,
+            birthday: birthday,
+            sex: gender,
+            status: user?.status
+        }
+        dispatch({
+            type: 'SET_USER',
+            user: data
+        })
+        axios.put(`${baseURL}/profiles/${user?.id}`, data,
+            {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json',
+                }
+            }
+        )
+            .then((response) => {
+                console.log('response', response.data)
+            }).catch((error) => console.error('error1:', error))
+    }
     return (
         <Modal visible={updateInfo} transparent animationType="fade">
             <View
@@ -610,7 +644,12 @@ const UpdateInfo = ({ updateInfo, onBack, user, account }) => {
                     )}
                     {showGender}
                     <TouchableOpacity style={[styles.button,
-                    { height: Platform.OS === 'ios' ? (show ? '10%' : '15%') : '15%', width: '90%' }]}>
+                    { height: Platform.OS === 'ios' ? (show ? '10%' : '15%') : '15%', width: '90%' }]}
+                        onPress={() => {
+                            updateBirthdayGender()
+                            setUpdateInfo(false)
+                        }}
+                    >
                         <Text style={{ color: '#fff', fontWeight: '600' }}>
                             Lưu thay đổi
                         </Text>

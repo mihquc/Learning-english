@@ -20,13 +20,15 @@ import Loader from '../../components/Load/loader';
 const GameScreen = () => {
     const answer = useSelector((state) => state.gameReducer.selectAnswers);
     const rightAnswer = useSelector((state) => state.gameReducer.rightAnswers);
-    console.log('answer', answer)
-    console.log('rightAnswer', rightAnswer)
+    // console.log('answer', answer)
+    // console.log('rightAnswer', rightAnswer)
     const token = useSelector((state) => state.authReducer.token);
     const user = useSelector((state) => state.authReducer.user);
     const route = useRoute();
     const id = route.params?.id;
-    console.log(id);
+    const reset = route.params?.reset;
+    // console.log('reset', reset);
+    // console.log(user?.id)
     const { navigate } = useNavigationService();
     const [games, setGames] = useState([]);
     const getAllGames = () => {
@@ -37,29 +39,72 @@ const GameScreen = () => {
             }
         })
             .then((response) => {
-                // console.log('response', response.data?.games)
-                setGames(response.data?.games,)
+                console.log('response:s', response.data?.games)
+                setGames(response.data?.games)
             })
-            .catch((error) => console.log('error', error))
+            .catch((error) => console.log('error1:', error.response))
+    }
+    const getAllGamesError = () => {
+        axios.get(`${baseURL}/games/error?ProfileId=${user?.id}&TopicId=${id}`, {
+            headers: {
+                'Accept': 'text/plain',
+                'Authorization': 'bearer ' + token,
+            }
+        })
+            .then((response) => {
+                console.log('response', response.data?.games)
+                setGames(response.data?.games)
+            })
+            .catch((error) => console.log('error2:', error.response))
     }
     const updateGame = (gameId, isCorrectAnswer) => {
         console.log('isCorrectAnswer', isCorrectAnswer)
-        formData = {
-            isPlayed: isCorrectAnswer
-        }
-        axios.patch(`${baseURL}/profiles/${user?.id}/games/${gameId}/play`, formData, {
-            headers: {
-                'Accept': 'text/plain',
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json',
+        if (!state) {
+            formData = {
+                profileId: user?.id,
+                gameId: gameId,
+                isPlayed: isCorrectAnswer
             }
-        }).then((response) => {
-            console.log('response', response.data)
-        }).catch((err) => console.error('errr', err.response))
+            axios.patch(`${baseURL}/profileGames/play`, formData, {
+                headers: {
+                    'Accept': 'text/plain',
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json-patch+json',
+                }
+            }).then((response) => {
+                console.log('response', response.data)
+            }).catch((err) => console.error('errr', err.response))
+        } else {
+            if (isCorrectAnswer) {
+                formData = {
+                    profileId: user?.id,
+                    gameId: gameId,
+                    isRepeat: isCorrectAnswer
+                }
+                axios.patch(`${baseURL}/profileGames/repeat`, formData, {
+                    headers: {
+                        'Accept': 'text/plain',
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json-patch+json',
+                    }
+                }).then((response) => {
+                    console.log('response1', response.data)
+                }).catch((err) => console.error('errr', err.response))
+            }
+            // if (isCorrectAnswer) {
+            //     const newGames = games.filter(question => question.id !== gameId);
+            //     setGames([])
+            //     setGames(newGames)
+            // }
+        }
     }
     useEffect(() => {
-        getAllGames();
-    }, [])
+        if (reset) {
+            setCurrentQuestionIndex(0)
+            console.log('ccccc')
+        }
+        getAllGames()
+    }, [reset])
     const [selectedAnswer, setSelectedAnswer] = useState(null)
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [checkAnswer, setCheckAnswer] = useState(false);
@@ -70,16 +115,33 @@ const GameScreen = () => {
     const [correctSound, setCorrectSound] = useState();
     const [incorrectSound, setIncorrectSound] = useState();
     const [sound, setSound] = useState(null);
+    const [state, setState] = useState(false)
+    console.log('state', state)
     const handleNext = () => {
-        if (currentQuestionIndex + 1 === newGames.length) {
-            setLoading(true);
-            setTimeout(() => {
-                navigate('CompleteGame', { id: id })
-                setLoading(false);
-            }, 2000);
+        if (currentQuestionIndex + 1 === games.length) {
+            if (!state) {
+                setLoading(true);
+                setTimeout(() => {
+                    // getAllGames()
+                    // setCurrentQuestionIndex(0)
+                    setProgress()
+                    navigate('Mistakes')
+                    setState(true)
+                    console.log('bbbbb')
+                    setLoading(false);
+                }, 2000);
+            } else {
+                if (games.length > 0) {
+                    console.log('aaaa')
+                    // getAllGames()
+                    // navigate('CompleteGame', { id: id })
+                    setCurrentQuestionIndex(0)
+                    setProgress()
+                }
+            }
         } else {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
-            setProgress((currentQuestionIndex + 1) / newGames.length)
+            setProgress((currentQuestionIndex + 1) / games.length)
             console.log('progress', progress)
         }
     };
@@ -169,8 +231,8 @@ const GameScreen = () => {
             await playSound(fileUri);
         }
     };
-    const newGames = games.filter(item => item.isPlayed !== true);
-    const questionss = newGames[currentQuestionIndex];
+    // const games = games.filter(item => item.isPlayed !== true);
+    const questionss = games[currentQuestionIndex];
     const createProfileGame = () => {
         const formData = {
             profileId: user?.id,
@@ -188,10 +250,12 @@ const GameScreen = () => {
         }).catch((err) => console.error('err', err))
     }
     useEffect(() => {
-        createProfileGame();
-    }, [questionss])
+        if (!state) {
+            createProfileGame();
+        }
+    }, [questionss, state])
     const renderQuestion = () => {
-        const question = newGames[currentQuestionIndex];
+        const question = games[currentQuestionIndex];
         switch (question?.kind) {
             case 'Picture Choice':
                 return <MultipleChoiceQuestion
@@ -228,13 +292,14 @@ const GameScreen = () => {
                     setCheckAnswer={setCheckAnswer}
                     setCorrectAnswer={setCorrectAnswer}
                     updateGame={updateGame}
-
+                    handleSound={handleSound}
                 />;
             case 'Foreign Sentence Scramble':
                 return <ForeignSentenceScramble
                     question={question}
                     setSelectedAnswer={setSelectedAnswer}
                     handlePress={handlePress}
+                    checkAnswer={checkAnswer}
                 />;
             case 'Fill Blank':
                 return <FillBlank
@@ -328,6 +393,7 @@ const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
         })
+        handlePress(question?.rightAnswer)
     }, [question])
     const selectAnswers = (answer) => {
         dispatch({
@@ -396,7 +462,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
     const [selectedWords, setSelectedWords] = useState([]);
     const [unselectedWords, setUnselectedWords] = useState([]);
     const dispatch = useDispatch();
-
+    // console.log('question', question)
     // console.log('option:', question.options)
     const words = question.options.map(item => item.name);
     useEffect(() => {
@@ -406,6 +472,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
         })
+        handlePress(question.rightAnswer)
     }, [question]);
     const selectAnswers = () => {
         const userAnswerString = selectedWords.join(' ');
@@ -456,7 +523,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
                 </View>
 
             </TouchableOpacity>
-            <View style={{ width: '90%', height: 'auto', flexDirection: 'row', borderBottomWidth: 0.5, flexWrap: 'wrap' }}>
+            <View style={styles.selectWords}>
                 {selectedWords.map((word, index) => (
                     <TouchableOpacity key={index}
                         onPress={() => handleDeselectWord(index)}
@@ -466,7 +533,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
                     </TouchableOpacity>
                 ))}
             </View>
-            <View style={{ width: '90%', height: 'auto', flexDirection: 'row', borderBottomWidth: 0.2, flexWrap: 'wrap' }}>
+            <View style={styles.selectWords}>
                 {unselectedWords.map((word, index) => (
                     <TouchableOpacity key={index} onPress={() => handleSelectWord(index)}
                         style={styles.wordButton}
@@ -478,7 +545,7 @@ const WordOrderQuestion = ({ question, onNext, setSelectedAnswer, selectAnswer, 
         </View>
     );
 };
-const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, checkAnswer, handlePress, setCheckAnswer, setCorrectAnswer, updateGame }) => {
+const PronunciationQuestion = ({ question, setSelectedAnswer, handleSound, handlePress, setCheckAnswer, setCorrectAnswer, updateGame }) => {
     const [recording, setRecording] = useState();
     const [soundUri, setSoundUri] = useState('');
     const [waveformData, setWaveformData] = useState([]);
@@ -494,6 +561,9 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, checkAnswe
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
         })
+        setWaveformData([])
+        setText(null)
+        handlePress(question.rightAnswer)
     }, [question])
 
     useEffect(() => {
@@ -563,7 +633,7 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, checkAnswe
                 setSoundUri(uri);
 
                 setRecording(null);
-                setSelectedAnswer(uri)
+                // setSelectedAnswer(uri)
 
                 const { sound } = await Audio.Sound.createAsync(
                     { uri },
@@ -637,6 +707,8 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, checkAnswe
             setCorrectAnswer(response.data?.similarity)
             updateGame(question?.id, response.data?.similarity)
             setSimilarity(response.data?.similarity)
+            handleSound(response.data?.similarity)
+            setSelectedAnswer(response.data)
         }).catch((error) => {
             console.log('error', error)
         })
@@ -667,8 +739,16 @@ const PronunciationQuestion = ({ question, onNext, setSelectedAnswer, checkAnswe
             <TouchableOpacity style={{ alignItems: 'center' }}
                 onPress={() => handlePress(question.rightAnswer)}
             >
-                <View style={{ borderWidth: 1, padding: 10, borderRadius: 10, borderColor: '#f2c601' }}>
-                    <Text style={{ fontSize: 17, fontWeight: '600', color: '#f2c601' }}>{question.rightAnswer}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', width: 'auto', justifyContent: 'space-between' }}>
+                    <Image
+                        source={require('../../../assets/speaker.png')}
+                        style={{ width: 25, height: 25, tintColor: '#f2c601' }}
+                    />
+                    <View style={{ borderWidth: 1, padding: 10, borderRadius: 10, borderColor: '#f2c601' }}>
+                        <Text style={{ fontSize: 17, fontWeight: '600', color: '#f2c601', textAlign: 'center' }}>
+                            {question.rightAnswer}
+                        </Text>
+                    </View>
                 </View>
                 <Image
                     source={require('../../../assets/lionvoice.png')}
@@ -717,6 +797,7 @@ const SentenceChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
         })
+        handlePress(question.rightAnswer)
     }, [question])
     const selectAnswers = (answer) => {
         dispatch({
@@ -773,6 +854,7 @@ const FillBlank = ({ question, onNext, setSelectedAnswer, handlePress }) => {
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
         });
+        handlePress(question.rightAnswer)
     }, [question]);
 
     const selectAnswers = (string) => {
@@ -793,7 +875,6 @@ const FillBlank = ({ question, onNext, setSelectedAnswer, handlePress }) => {
         selectAnswers(newString)
     }, [selectedWords, question, unselectedWords]);
 
-    // console.log('selectedWords', parts.join(' '))
     const handleSelectWord = (index) => {
         const newSelectedWords = [...selectedWords];
         newSelectedWords[blankPosition] = unselectedWords[index];
@@ -872,7 +953,7 @@ const FillBlank = ({ question, onNext, setSelectedAnswer, handlePress }) => {
     );
 
 }
-const ForeignSentenceScramble = ({ question, onNext, setSelectedAnswer, handlePress }) => {
+const ForeignSentenceScramble = ({ question, checkAnswer, setSelectedAnswer, handlePress }) => {
     const [selectedWords, setSelectedWords] = useState([]);
     const [unselectedWords, setUnselectedWords] = useState([]);
     const dispatch = useDispatch();
@@ -885,6 +966,7 @@ const ForeignSentenceScramble = ({ question, onNext, setSelectedAnswer, handlePr
             type: 'RIGHT_ANSWER',
             rightAnswers: question.rightAnswer
         })
+        handlePress(question.question)
     }, [question]);
     const selectAnswers = () => {
         const userAnswerString = selectedWords.join(' ');
@@ -898,7 +980,6 @@ const ForeignSentenceScramble = ({ question, onNext, setSelectedAnswer, handlePr
     }, [selectedWords])
     const handleSelectWord = (index) => {
         const word = unselectedWords[index];
-        // handlePress(word)
         setUnselectedWords(unselectedWords.filter((_, i) => i !== index));
         setSelectedWords([...selectedWords, word]);
         if (unselectedWords.length >= 0) {
@@ -945,7 +1026,7 @@ const ForeignSentenceScramble = ({ question, onNext, setSelectedAnswer, handlePr
                     <TouchableOpacity key={index}
                         onPress={() => handleDeselectWord(index)}
                         style={styles.wordButton}
-                    // disabled={checkAnswer}
+                        disabled={checkAnswer}
                     >
                         <Text style={styles.wordText}>{word}</Text>
                     </TouchableOpacity>
@@ -956,7 +1037,10 @@ const ForeignSentenceScramble = ({ question, onNext, setSelectedAnswer, handlePr
                 flexWrap: 'wrap', justifyContent: 'center'
             }}>
                 {unselectedWords.map((word, index) => (
-                    <TouchableOpacity key={index} onPress={() => handleSelectWord(index)} style={styles.wordButton}>
+                    <TouchableOpacity key={index}
+                        onPress={() => handleSelectWord(index)}
+                        style={styles.wordButton}
+                        disabled={checkAnswer}>
                         <Text style={styles.wordText}>{word}</Text>
                     </TouchableOpacity>
                 ))}
@@ -1074,5 +1158,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '500',
         color: '#ffffff'
+    },
+    selectWords: {
+        width: '90%',
+        height: 'auto',
+        flexDirection: 'row',
+        borderBottomWidth: 0.5,
+        flexWrap: 'wrap',
+        justifyContent: 'center'
     }
 })

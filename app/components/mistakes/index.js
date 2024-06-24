@@ -6,35 +6,19 @@ import { useRoute } from '@react-navigation/native'
 import { useSelector } from 'react-redux'
 import useNavigationService from '../../navigation/NavigationService'
 
-const CompleteGame = () => {
-    const { navigate, goPopMultiple } = useNavigationService()
+const Mistakes = () => {
+    const { goBack, navigate } = useNavigationService()
     const [topics, setTopics] = useState([])
     const route = useRoute();
     const id = route.params?.id;
-    const token = useSelector((state) => state.authReducer.token);
-    console.log(id)
-    const getAllTopic = () => {
-        axios.get(`${baseURL}/topics`, {
-            headers: {
-                'Authorization': 'bearer ' + token,
-            }
-        })
-            .then((response) => {
-                console.log('data', response.data?.topics)
-                setTopics(response.data?.topics)
-            })
-            .catch((error) => console.error(error))
-    }
-    const topic = topics.find((topic) => topic.id === id)
-    console.log(topic)
-    useEffect(() => {
-        getAllTopic()
-    }, [])
+    // const token = useSelector((state) => state.authReducer.token);
+    // console.log(id)
+    // const topic = topics.find((topic) => topic.id === id)
+
     return (
         <View style={styles.container}>
             <View style={styles.viewBody}>
-                <Text style={styles.text}>Bạn đã hoàn thành chủ đề {topic?.name}</Text>
-                <Text style={styles.text}>Số câu chính xác: {topic?.numberOfPlayedGames} / {topic?.numberOfGame}</Text>
+                <Text style={styles.text}>Cùng sửa những câu bạn đã làm sai nào!</Text>
                 <Image
                     source={require('../../../assets/complete.png')}
                 />
@@ -42,17 +26,17 @@ const CompleteGame = () => {
             <View style={styles.viewButton}>
                 <TouchableOpacity style={styles.button}
                     onPress={() => {
-                        goPopMultiple(3)
+                        navigate('GameScreen', { reset: true })
                     }}
                 >
-                    <Text style={{ color: '#FFFFFF', fontSize: 20, fontWeight: '600' }}>Home</Text>
+                    <Text style={{ color: '#FFFFFF', fontSize: 20, fontWeight: '600' }}>Tiếp tục</Text>
                 </TouchableOpacity>
             </View>
         </View>
     )
 }
 
-export default CompleteGame
+export default Mistakes
 
 const styles = StyleSheet.create({
     container: {
