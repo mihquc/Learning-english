@@ -26,7 +26,7 @@ const Mistakes = () => {
             <View style={styles.viewButton}>
                 <TouchableOpacity style={styles.button}
                     onPress={() => {
-                        navigate('GameScreen', { reset: true })
+                        navigate('GameScreen', { reset: true, id: id })
                     }}
                 >
                     <Text style={{ color: '#FFFFFF', fontSize: 20, fontWeight: '600' }}>Tiếp tục</Text>

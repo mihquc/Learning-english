@@ -45,15 +45,19 @@ const GameScreen = () => {
             .catch((error) => console.log('error1:', error.response))
     }
     const getAllGamesError = () => {
-        axios.get(`${baseURL}/games/error?ProfileId=${user?.id}&TopicId=${id}`, {
+        axios.get(`${baseURL}/games/repeat?ProfileId=${user?.id}&TopicId=${id}`, {
             headers: {
                 'Accept': 'text/plain',
                 'Authorization': 'bearer ' + token,
             }
         })
             .then((response) => {
-                console.log('response', response.data?.games)
-                setGames(response.data?.games)
+                console.log('response1:', response.data?.games)
+                if (response.data?.games.length === 0) {
+                    navigate('CompleteGame', { id: id })
+                } else {
+                    setGames(response.data?.games)
+                }
             })
             .catch((error) => console.log('error2:', error.response))
     }
@@ -99,11 +103,15 @@ const GameScreen = () => {
         }
     }
     useEffect(() => {
-        if (reset) {
-            setCurrentQuestionIndex(0)
-            console.log('ccccc')
-        }
         getAllGames()
+    }, [])
+    useEffect(() => {
+        if (reset) {
+            console.log('ccccc')
+            setGames([])
+            getAllGamesError()
+            setCurrentQuestionIndex(0)
+        }
     }, [reset])
     const [selectedAnswer, setSelectedAnswer] = useState(null)
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -125,19 +133,22 @@ const GameScreen = () => {
                     // getAllGames()
                     // setCurrentQuestionIndex(0)
                     setProgress()
-                    navigate('Mistakes')
+                    navigate('Mistakes', { id: id })
                     setState(true)
                     console.log('bbbbb')
                     setLoading(false);
                 }, 2000);
             } else {
-                if (games.length > 0) {
-                    console.log('aaaa')
-                    // getAllGames()
-                    // navigate('CompleteGame', { id: id })
-                    setCurrentQuestionIndex(0)
-                    setProgress()
-                }
+                // if (games.length > 0) {
+                console.log('aaaa')
+                // setGames([])
+                console.log('game:', games)
+                getAllGamesError()
+                setCurrentQuestionIndex(0)
+                setProgress()
+                // } else {
+                //     navigate('CompleteGame', { id: id })
+                // }
             }
         } else {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
