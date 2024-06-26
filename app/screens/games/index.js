@@ -39,8 +39,15 @@ const GameScreen = () => {
             }
         })
             .then((response) => {
-                console.log('response:s', response.data?.games)
-                setGames(response.data?.games)
+                // console.log('response:s', response.data?.games)
+                const updatedGames = response.data?.games.map(item => {
+                    if (item.isRepeat) {
+                        return { ...item, isRepeat: false };
+                    }
+                    return item;
+                });
+                console.log('response:s', updatedGames)
+                setGames(updatedGames)
             })
             .catch((error) => console.log('error1:', error.response))
     }
@@ -141,7 +148,7 @@ const GameScreen = () => {
             } else {
                 // if (games.length > 0) {
                 console.log('aaaa')
-                // setGames([])
+                setGames([])
                 console.log('game:', games)
                 getAllGamesError()
                 setCurrentQuestionIndex(0)
@@ -261,7 +268,7 @@ const GameScreen = () => {
         }).catch((err) => console.error('err', err))
     }
     useEffect(() => {
-        if (!state) {
+        if (!state && questionss?.isPlayed === null) {
             createProfileGame();
         }
     }, [questionss, state])
@@ -421,9 +428,12 @@ const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
     };
     const rows = chunk(question.options, 2);
     const handleSelect = (text, index) => {
-        handlePress(text)
-        selectAnswers(text);
-        setSelectedAnswer(index);
+        if (checkAnswer) {
+            handlePress(text)
+        } else {
+            selectAnswers(text);
+            setSelectedAnswer(index);
+        }
     }
     return (
         <View style={{ alignItems: 'center', justifyContent: 'space-evenly', width: '90%', height: '70%' }}>
@@ -451,7 +461,7 @@ const MultipleChoiceQuestion = ({ question, onNext, setSelectedAnswer, selectedA
                                 key={index}
                                 onPress={() => { handleSelect(option.name, optionIndex) }}
                                 style={[styles.option, { borderColor: isSelected ? '#f2c601' : 'gray', borderWidth: isSelected ? 3 : 1 }]}
-                                disabled={checkAnswer}
+                            // disabled={checkAnswer}
                             >
                                 <Image
                                     source={{ uri: option?.photoFilePath }}
