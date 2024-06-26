@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "project",
+    "name": "LION GO",
     "slug": "project",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -29,7 +29,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "768b7d83-5db4-4fd8-bde0-de930dd92046"
+        "projectId": "63b16814-39fc-4ae4-a090-2b6d848f02d7"
       }
     }
   }

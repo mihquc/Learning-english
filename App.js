@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, useColorScheme } from 'react-native';
 import AnimatedSplash from "react-native-animated-splash-screen";
 import BottomTabs from './app/navigation/BottomTabs';
+// import { Audio } from 'expo-av';
 import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AuthNavigator from './app/navigation/AuthNavigatior';
@@ -16,11 +17,42 @@ import Mistakes from './app/components/mistakes';
 
 export default function App() {
   const [loading, setloading] = useState(false);
+  // const [startSound, setStartSound] = useState();
   useEffect(() => {
     setTimeout(() => {
       setloading(true)
     }, 2000);
   }, [])
+  // useEffect(() => {
+  //   const loadSounds = async () => {
+  //     const startSound = new Audio.Sound();
+
+  //     await startSound.loadAsync(require('../project/assets/start.mp3'));
+
+  //     setStartSound(startSound);
+  //   };
+
+  //   loadSounds();
+
+  //   return () => {
+  //     if (startSound) {
+  //       startSound.unloadAsync();
+  //     }
+  //   };
+  // }, []);
+  // useEffect(() => {
+  //   const handleSound = async () => {
+  //     if (startSound) {
+  //       await startSound.replayAsync();
+  //       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  //     }
+  //   };
+
+  //   if (startSound) {
+  //     handleSound();
+  //   }
+  // }, [startSound]);
+
   return (
     <AnimatedSplash
       translucent={false}
